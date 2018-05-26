@@ -115,7 +115,7 @@ def print_blockchain_elements():
         print('Printez block')
         print(block)
     else:
-        print('-' * 20)
+        print('-' * len(str(block)))
 
 
 def verify_chain():
