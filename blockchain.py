@@ -5,54 +5,60 @@ import pickle
 
 from hash_util import hash_block, hash_string_256
 
-genesis_block = {'previous_hash': '',
-                 'index': 0,
-                 'rezultate': [],
-                 'proof': 123
-                 }
-blockchain = [genesis_block]
+blockchain = []
 date_de_introdus = []
+
 dificultate = 2
 nume_fisier = 'blockchain.txt'
 
 
 def load_data():
-    with open(nume_fisier, mode='r') as f:
-        # file_content = pickle.loads(f.read())
-        file_content = f.readlines()
+    global blockchain
+    global date_de_introdus
+    try:
+        with open(nume_fisier, mode='r') as f:
+            # file_content = pickle.loads(f.read())
+            file_content = f.readlines()
+            # blockchain = file_content['chain']
+            # date_de_introdus = file_content['rez']
+            blockchain = json.loads(file_content[0][:-1])
+            blockchain = [{'previous_hash': block['previous_hash'],
+                           'index': block['index'],
+                           'proof': block['proof'],
+                           'rezultate': [OrderedDict([('nume', rez['nume']),
+                                                      ('materie',
+                                                       rez['materie']),
+                                                      ('nota', rez['nota'])])
+                                         for rez in block['rezultate']]} for block in blockchain]
+            date_de_introdus = json.loads(file_content[1])
+            date_de_introdus = [OrderedDict([('nume', rez['nume']),
+                                             ('materie', rez['materie']),
+                                             ('nota', rez['nota'])])
+                                for rez in date_de_introdus]
+    except (IOError, IndexError):
+        genesis_block = {'previous_hash': '',
+                         'index': 0,
+                         'rezultate': [],
+                         'proof': 123
+                         }
+        blockchain = [genesis_block]
+        date_de_introdus = []
 
-        global blockchain
-        global date_de_introdus
 
-        # blockchain = file_content['chain']
-        # date_de_introdus = file_content['rez']
-        blockchain = json.loads(file_content[0][:-1])
-        blockchain = [{'previous_hash': block['previous_hash'],
-                       'index': block['index'],
-                       'proof': block['proof'],
-                       'rezultate': [OrderedDict([('nume', rez['nume']),
-                                                  ('materie', rez['materie']),
-                                                  ('nota', rez['nota'])])
-                                     for rez in block['rezultate']]} for block in blockchain]
-        date_de_introdus = json.loads(file_content[1])
-        date_de_introdus = [OrderedDict([('nume', rez['nume']),
-                                         ('materie', rez['materie']),
-                                         ('nota', rez['nota'])])
-                            for rez in date_de_introdus]
-
-
-# load_data()
+load_data()
 
 
 def save_data():
-    with open(nume_fisier, mode='w') as f:
-        f.write(json.dumps(blockchain))
-        f.write('\n')
-        f.write(json.dumps(date_de_introdus))
-        # saved_data = {'chain': blockchain,
-        #               'rez': date_de_introdus}
-        # f.write(pickle.dumps(saved_data))
-
+    try:
+        with open(nume_fisier, mode='w') as f:
+            f.write(json.dumps(blockchain))
+            f.write('\n')
+            f.write(json.dumps(date_de_introdus))
+            # saved_data = {'chain': blockchain,
+            #               'rez': date_de_introdus}
+            # f.write(pickle.dumps(saved_data))
+    except IOError:
+        print('Saving fail!')
 
 def valid_proof(date_de_introdus, last_hash, proof):
     print()
