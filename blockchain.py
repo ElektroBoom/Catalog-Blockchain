@@ -125,8 +125,7 @@ def verify_chain():
         if block['previous_hash'] != hash_block(blockchain[index-1]):
             return False
         if not valid_proof(block['rezultate'], block['previous_hash'], block['proof']):
-            print('PoW invalid! pentru rezultate {} \n hash anterior {} \n proof {}'.format(
-                block['rezultate'], block['previous_hash'], block['proof']))
+            print('PoW invalid!')
             return False
     return True
 
