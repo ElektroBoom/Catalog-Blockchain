@@ -13,25 +13,28 @@ nume_fisier = 'blockchain.ekb'
 class Blockchain:
     def __init__(self, hosting_node_id):
         genesis_block = Block(0, '', [], 123, 0)
-        self.__chain = [genesis_block]
+        self.chain = [genesis_block]
         self.__date_de_introdus = []
         self.load_data()
         self.hosting_node = hosting_node_id
 
-    def get_chain(self):
+    @property
+    def chain(self):
         return self.__chain[:]
+
+    @chain.setter
+    def chain(self, val):
+        self.__chain = val
 
     def get_date_de_introdus(self):
         self.__date_de_introdus[:]
 
     def load_data(self):
-        global blockchain
-        global date_de_introdus
         try:
             with open(nume_fisier, mode='rb') as f:
                 file_content = pickle.loads(f.read())
                 # file_content = f.readlines()
-                self.__chain = file_content['chain']
+                self.chain = file_content['chain']
                 self.__date_de_introdus = file_content['rez']
                 # blockchain = json.loads(file_content[0][:-1])
                 # blockchain = [{'previous_hash': block['previous_hash'],

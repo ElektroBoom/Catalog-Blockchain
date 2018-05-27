@@ -19,7 +19,7 @@ class Node:
         return input('Alegerea dumneavoastra: ')
 
     def print_blockchain_elements(self):
-        for block in self.blockchain.get_chain():
+        for block in self.blockchain.chain:
             print('Printez block')
             print(block)
         else:
@@ -48,7 +48,7 @@ class Node:
                 waiting_for_input = False
             else:
                 print('Optiune inexistenta!')
-            if not Verification.verify_chain(self.blockchain.get_chain()):
+            if not Verification.verify_chain(self.blockchain.chain):
                 self.print_blockchain_elements()
                 print('Blockchain-ul este invalid!')
                 break
