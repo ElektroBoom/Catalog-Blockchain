@@ -7,137 +7,83 @@ from hash_util import hash_block
 from block import Block
 from rezultat import Rezultat
 
-
-blockchain = []
-date_de_introdus = []
-
 nume_fisier = 'blockchain.ekb'
 
 
-def load_data():
-    global blockchain
-    global date_de_introdus
-    try:
-        with open(nume_fisier, mode='rb') as f:
-            file_content = pickle.loads(f.read())
-            # file_content = f.readlines()
-            blockchain = file_content['chain']
-            date_de_introdus = file_content['rez']
-            # blockchain = json.loads(file_content[0][:-1])
-            # blockchain = [{'previous_hash': block['previous_hash'],
-            #                'index': block['index'],
-            #                'proof': block['proof'],
-            #                'rezultate': [OrderedDict([('nume', rez['nume']),
-            #                                           ('materie',
-            #                                            rez['materie']),
-            #                                           ('nota', rez['nota'])])
-            #                              for rez in block['rezultate']]} for block in blockchain]
-            # date_de_introdus = json.loads(file_content[1])
-            # date_de_introdus = [OrderedDict([('nume', rez['nume']),
-            #                                  ('materie', rez['materie']),
-            #                                  ('nota', rez['nota'])])
-            #                     for rez in date_de_introdus]
-    except (IOError, IndexError):
+class Blockchain:
+    def __init__(self, hosting_node_id):
         genesis_block = Block(0, '', [], 123, 0)
-        blockchain = [genesis_block]
-        date_de_introdus = []
+        self.chain = [genesis_block]
+        self.date_de_introdus = []
+        self.load_data()
+        self.hosting_node = hosting_node_id
 
+    def load_data(self):
+        global blockchain
+        global date_de_introdus
+        try:
+            with open(nume_fisier, mode='rb') as f:
+                file_content = pickle.loads(f.read())
+                # file_content = f.readlines()
+                self.chain = file_content['chain']
+                self.date_de_introdus = file_content['rez']
+                # blockchain = json.loads(file_content[0][:-1])
+                # blockchain = [{'previous_hash': block['previous_hash'],
+                #                'index': block['index'],
+                #                'proof': block['proof'],
+                #                'rezultate': [OrderedDict([('nume', rez['nume']),
+                #                                           ('materie',
+                #                                            rez['materie']),
+                #                                           ('nota', rez['nota'])])
+                #                              for rez in block['rezultate']]} for block in blockchain]
+                # date_de_introdus = json.loads(file_content[1])
+                # date_de_introdus = [OrderedDict([('nume', rez['nume']),
+                #                                  ('materie', rez['materie']),
+                #                                  ('nota', rez['nota'])])
+                #                     for rez in date_de_introdus]
+        except (IOError, IndexError):
+            pass
 
-load_data()
+    def save_data(self):
+        try:
+            with open(nume_fisier, mode='wb') as f:
+                # f.write(json.dumps(blockchain))
+                # f.write('\n')
+                # f.write(json.dumps(date_de_introdus))
+                saved_data = {'chain': self.chain,
+                              'rez': self.date_de_introdus}
+                f.write(pickle.dumps(saved_data))
+        except IOError:
+            print('Saving fail!')
 
+    def proof_of_work(self):
+        last_block = self.chain[-1]
+        last_hash = hash_block(last_block)
+        proof = 0
+        verifier = Verification()
+        while not verifier.valid_proof(self.date_de_introdus, last_hash, proof):
+            proof += 1
+        return proof
 
-def save_data():
-    try:
-        with open(nume_fisier, mode='wb') as f:
-            # f.write(json.dumps(blockchain))
-            # f.write('\n')
-            # f.write(json.dumps(date_de_introdus))
-            saved_data = {'chain': blockchain,
-                          'rez': date_de_introdus}
-            f.write(pickle.dumps(saved_data))
-    except IOError:
-        print('Saving fail!')
+    def get_last_blockchain_value(self):
+        if len(self.chain) < 1:
+            return None
+        return self.chain[-1]
 
+    def add_nota(self, nume, materie, nota):
+        mark = Rezultat(nume, materie, nota)
+        self.date_de_introdus.append(mark)
+        self.save_data()
 
-def proof_of_work():
-    last_block = blockchain[-1]
-    last_hash = hash_block(last_block)
-    proof = 0
-    verifier = Verification()
-    while not verifier.valid_proof(date_de_introdus, last_hash, proof):
-        proof += 1
-    return proof
+    def mine_block(self):
+        hashed_last_block = hash_block(self.get_last_blockchain_value())
+        proof = self.proof_of_work()
+        block = Block(len(self.chain), hashed_last_block,
+                      self.date_de_introdus, proof)
+        self.chain.append(block)
+        self.date_de_introdus = []
+        self.save_data()
+        return True
 
-
-def get_last_blockchain_value():
-    if len(blockchain) < 1:
-        return None
-    return blockchain[-1]
-
-
-def add_nota(nume, materie, nota):
-    mark = Rezultat(nume, materie, nota)
-    date_de_introdus.append(mark)
-    save_data()
-
-
-def mine_block():
-    hashed_last_block = hash_block(get_last_blockchain_value())
-    proof = proof_of_work()
-    block = Block(len(blockchain), hashed_last_block, date_de_introdus, proof)
-    blockchain.append(block)
-    return True
-
-
-def get_nota_value():
-    nume = input('Nume student: ')
-    materie = input('Denumire materie: ')
-    nota = float(input('Nota: '))
-    return nume, materie, nota
-
-
-def get_user_choice():
-    return input('Alegerea dumneavoastra: ')
-
-
-def print_blockchain_elements():
-    for block in blockchain:
-        print('Printez block')
-        print(block)
-    else:
-        print('-' * 90)
-
-
-waiting_for_input = True
-
-while waiting_for_input:
-    print('Alegeti o optiune:')
-    print('1: Adauga o nota')
-    print('2: Mineaza blocuri')
-    print('3: Afiseaza blocuri blockchain')
-    print('q: Opreste executia programului')
-    user_choice = get_user_choice()
-    if user_choice == '1':
-        tx_rezultate = get_nota_value()
-        nume, materie, nota = tx_rezultate
-        add_nota(nume, materie, nota)
-        print(date_de_introdus)
-    elif user_choice == '2':
-        if mine_block():
-            date_de_introdus = []
-            save_data()
-    elif user_choice == '3':
-        print_blockchain_elements()
-    elif user_choice == 'q':
-        waiting_for_input = False
-    else:
-        print('Optiune inexistenta!')
-    verifier = Verification()
-    if not verifier.verify_chain(blockchain):
-        print_blockchain_elements()
-        print('Blockchain-ul este invalid!')
-        break
-else:
-    print('Utilizatorul a iesit!')
 
 print("Gata!")
