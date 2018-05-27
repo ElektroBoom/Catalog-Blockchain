@@ -2,8 +2,8 @@ import hashlib as hl
 import json
 import pickle
 
-from verification import Verification
-from hash_util import hash_block
+from utility.verification import Verification
+from utility.hash_util import hash_block
 from block import Block
 from rezultat import Rezultat
 
