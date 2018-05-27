@@ -36,29 +36,12 @@ class Blockchain:
                 # file_content = f.readlines()
                 self.chain = file_content['chain']
                 self.__date_de_introdus = file_content['rez']
-                # blockchain = json.loads(file_content[0][:-1])
-                # blockchain = [{'previous_hash': block['previous_hash'],
-                #                'index': block['index'],
-                #                'proof': block['proof'],
-                #                'rezultate': [OrderedDict([('nume', rez['nume']),
-                #                                           ('materie',
-                #                                            rez['materie']),
-                #                                           ('nota', rez['nota'])])
-                #                              for rez in block['rezultate']]} for block in blockchain]
-                # date_de_introdus = json.loads(file_content[1])
-                # date_de_introdus = [OrderedDict([('nume', rez['nume']),
-                #                                  ('materie', rez['materie']),
-                #                                  ('nota', rez['nota'])])
-                #                     for rez in  date_de_introdus]
         except (IOError, IndexError):
             pass
 
     def save_data(self):
         try:
             with open(nume_fisier, mode='wb') as f:
-                # f.write(json.dumps(blockchain))
-                # f.write('\n')
-                # f.write(json.dumps(date_de_introdus))
                 saved_data = {'chain': self.__chain,
                               'rez': self.__date_de_introdus}
                 f.write(pickle.dumps(saved_data))
