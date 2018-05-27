@@ -9,6 +9,7 @@ from rezultat import Rezultat
 
 nume_fisier = 'blockchain.ekb'
 
+
 class Blockchain:
     def __init__(self, hosting_node_id):
         genesis_block = Block(0, '', [], 123, 0)
