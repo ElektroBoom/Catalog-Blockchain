@@ -4,43 +4,41 @@ from collections import OrderedDict
 import pickle
 
 from hash_util import hash_block, hash_string_256
+from block import Block
+
 
 blockchain = []
 date_de_introdus = []
 
 dificultate = 2
-nume_fisier = 'blockchain.txt'
+nume_fisier = 'blockchain.ekb'
 
 
 def load_data():
     global blockchain
     global date_de_introdus
     try:
-        with open(nume_fisier, mode='r') as f:
-            # file_content = pickle.loads(f.read())
-            file_content = f.readlines()
-            # blockchain = file_content['chain']
-            # date_de_introdus = file_content['rez']
-            blockchain = json.loads(file_content[0][:-1])
-            blockchain = [{'previous_hash': block['previous_hash'],
-                           'index': block['index'],
-                           'proof': block['proof'],
-                           'rezultate': [OrderedDict([('nume', rez['nume']),
-                                                      ('materie',
-                                                       rez['materie']),
-                                                      ('nota', rez['nota'])])
-                                         for rez in block['rezultate']]} for block in blockchain]
-            date_de_introdus = json.loads(file_content[1])
-            date_de_introdus = [OrderedDict([('nume', rez['nume']),
-                                             ('materie', rez['materie']),
-                                             ('nota', rez['nota'])])
-                                for rez in date_de_introdus]
+        with open(nume_fisier, mode='rb') as f:
+            file_content = pickle.loads(f.read())
+            # file_content = f.readlines()
+            blockchain = file_content['chain']
+            date_de_introdus = file_content['rez']
+            # blockchain = json.loads(file_content[0][:-1])
+            # blockchain = [{'previous_hash': block['previous_hash'],
+            #                'index': block['index'],
+            #                'proof': block['proof'],
+            #                'rezultate': [OrderedDict([('nume', rez['nume']),
+            #                                           ('materie',
+            #                                            rez['materie']),
+            #                                           ('nota', rez['nota'])])
+            #                              for rez in block['rezultate']]} for block in blockchain]
+            # date_de_introdus = json.loads(file_content[1])
+            # date_de_introdus = [OrderedDict([('nume', rez['nume']),
+            #                                  ('materie', rez['materie']),
+            #                                  ('nota', rez['nota'])])
+            #                     for rez in date_de_introdus]
     except (IOError, IndexError):
-        genesis_block = {'previous_hash': '',
-                         'index': 0,
-                         'rezultate': [],
-                         'proof': 123
-                         }
+        genesis_block = Block(0, '', [], 123, 0)
         blockchain = [genesis_block]
         date_de_introdus = []
 
@@ -50,23 +48,21 @@ load_data()
 
 def save_data():
     try:
-        with open(nume_fisier, mode='w') as f:
-            f.write(json.dumps(blockchain))
-            f.write('\n')
-            f.write(json.dumps(date_de_introdus))
-            # saved_data = {'chain': blockchain,
-            #               'rez': date_de_introdus}
-            # f.write(pickle.dumps(saved_data))
+        with open(nume_fisier, mode='wb') as f:
+            # f.write(json.dumps(blockchain))
+            # f.write('\n')
+            # f.write(json.dumps(date_de_introdus))
+            saved_data = {'chain': blockchain,
+                          'rez': date_de_introdus}
+            f.write(pickle.dumps(saved_data))
     except IOError:
         print('Saving fail!')
 
-def valid_proof(date_de_introdus, last_hash, proof):
-    print()
-    guess = (str(date_de_introdus) + str(last_hash) + str(proof)).encode()
+
+def valid_proof(rezultate, last_hash, proof):
+    guess = (str(rezultate) + str(last_hash) + str(proof)).encode()
     guess_hash = hash_string_256(guess)
     isValid = guess_hash[:2] == '0' * dificultate
-    print('Proof of work pentru {}\n{}\n{}\neste {}'.format(
-        date_de_introdus, last_hash, proof, isValid))
     return isValid
 
 
@@ -93,14 +89,8 @@ def add_nota(nume, materie, nota):
 
 def mine_block():
     hashed_last_block = hash_block(get_last_blockchain_value())
-    print('hashed last block', hashed_last_block)
     proof = proof_of_work()
-    print('proof of work', proof)
-    block = {'previous_hash': hashed_last_block,
-             'index': len(blockchain),
-             'rezultate': date_de_introdus,
-             'proof': proof
-             }
+    block = Block(len(blockchain), hashed_last_block, date_de_introdus, proof)
     blockchain.append(block)
     return True
 
@@ -121,16 +111,17 @@ def print_blockchain_elements():
         print('Printez block')
         print(block)
     else:
-        print('-' * len(str(block)))
+        print('-' * 90)
 
 
 def verify_chain():
     for (index, block) in enumerate(blockchain):
+        print('block rezultate', block.rezultate)
         if index == 0:
             continue
-        if block['previous_hash'] != hash_block(blockchain[index-1]):
+        if block.previous_hash != hash_block(blockchain[index-1]):
             return False
-        if not valid_proof(block['rezultate'], block['previous_hash'], block['proof']):
+        if not valid_proof(block.rezultate, block.previous_hash, block.proof):
             print('PoW invalid!')
             return False
     return True
@@ -143,8 +134,6 @@ while waiting_for_input:
     print('1: Adauga o nota')
     print('2: Mineaza blocuri')
     print('3: Afiseaza blocuri blockchain')
-    print('4: Elevi inregistrati')
-    print('h: Manipuleaza date blockchain')
     print('q: Opreste executia programului')
     user_choice = get_user_choice()
     if user_choice == '1':
@@ -158,11 +147,6 @@ while waiting_for_input:
             save_data()
     elif user_choice == '3':
         print_blockchain_elements()
-    elif user_choice == 'h':
-        if len(blockchain) >= 1:
-            blockchain[0] = {'previous_hash': '',
-                             'index': 0,
-                             'rezultate': [{'nume': 'Iulian', 'materie': 'Info', 'nota': '10'}]}
     elif user_choice == 'q':
         waiting_for_input = False
     else:
