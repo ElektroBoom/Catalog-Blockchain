@@ -19,7 +19,7 @@ class Node:
         return input('Alegerea dumneavoastra: ')
 
     def print_blockchain_elements(self):
-        for block in self.blockchain.chain:
+        for block in self.blockchain.get_chain():
             print('Printez block')
             print(block)
         else:
@@ -39,7 +39,7 @@ class Node:
                 tx_rezultate = self.get_nota_value()
                 nume, materie, nota = tx_rezultate
                 self.blockchain.add_nota(nume, materie, nota)
-                print(self.blockchain.date_de_introdus)
+                print(self.blockchain.get_date_de_introdus)
             elif user_choice == '2':
                 self.blockchain.mine_block()
             elif user_choice == '3':
@@ -48,13 +48,13 @@ class Node:
                 waiting_for_input = False
             else:
                 print('Optiune inexistenta!')
-            verifier = Verification()
-            if not verifier.verify_chain(self.blockchain.chain):
+            if not Verification.verify_chain(self.blockchain.get_chain()):
                 self.print_blockchain_elements()
                 print('Blockchain-ul este invalid!')
                 break
         else:
             print('Utilizatorul a iesit!')
+
 
 node = Node()
 node.listen_for_input()
