@@ -5,7 +5,7 @@ import pickle
 
 from hash_util import hash_block, hash_string_256
 from block import Block
-
+from rezultat import Rezultat
 
 blockchain = []
 date_de_introdus = []
@@ -82,7 +82,7 @@ def get_last_blockchain_value():
 
 
 def add_nota(nume, materie, nota):
-    mark = OrderedDict([('nume', nume), ('materie', materie), ('nota', nota)])
+    mark = Rezultat(nume, materie, nota)
     date_de_introdus.append(mark)
     save_data()
 
