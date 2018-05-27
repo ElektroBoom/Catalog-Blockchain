@@ -9,7 +9,6 @@ from rezultat import Rezultat
 
 nume_fisier = 'blockchain.ekb'
 
-
 class Blockchain:
     def __init__(self, hosting_node_id):
         genesis_block = Block(0, '', [], 123, 0)
@@ -49,7 +48,7 @@ class Blockchain:
                 # date_de_introdus = [OrderedDict([('nume', rez['nume']),
                 #                                  ('materie', rez['materie']),
                 #                                  ('nota', rez['nota'])])
-                #                     for rez in date_de_introdus]
+                #                     for rez in  date_de_introdus]
         except (IOError, IndexError):
             pass
 
