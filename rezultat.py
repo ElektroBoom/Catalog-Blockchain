@@ -1,4 +1,5 @@
 from printable import Printable
+from collections import OrderedDict
 
 
 class Rezultat(Printable):
@@ -9,3 +10,6 @@ class Rezultat(Printable):
 
     def __repr__(self):
         return str(self.__dict__)
+
+    def to_ordered_dict(self):
+        return OrderedDict([('nume', self.nume), ('materie', self.materie), ('nota', self.nota)])

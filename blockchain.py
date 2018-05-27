@@ -1,16 +1,16 @@
 import hashlib as hl
 import json
-from collections import OrderedDict
 import pickle
 
-from hash_util import hash_block, hash_string_256
+from verification import Verification
+from hash_util import hash_block
 from block import Block
 from rezultat import Rezultat
+
 
 blockchain = []
 date_de_introdus = []
 
-dificultate = 2
 nume_fisier = 'blockchain.ekb'
 
 
@@ -59,18 +59,12 @@ def save_data():
         print('Saving fail!')
 
 
-def valid_proof(rezultate, last_hash, proof):
-    guess = (str(rezultate) + str(last_hash) + str(proof)).encode()
-    guess_hash = hash_string_256(guess)
-    isValid = guess_hash[:2] == '0' * dificultate
-    return isValid
-
-
 def proof_of_work():
     last_block = blockchain[-1]
     last_hash = hash_block(last_block)
     proof = 0
-    while not valid_proof(date_de_introdus, last_hash, proof):
+    verifier = Verification()
+    while not verifier.valid_proof(date_de_introdus, last_hash, proof):
         proof += 1
     return proof
 
@@ -114,19 +108,6 @@ def print_blockchain_elements():
         print('-' * 90)
 
 
-def verify_chain():
-    for (index, block) in enumerate(blockchain):
-        print('block rezultate', block.rezultate)
-        if index == 0:
-            continue
-        if block.previous_hash != hash_block(blockchain[index-1]):
-            return False
-        if not valid_proof(block.rezultate, block.previous_hash, block.proof):
-            print('PoW invalid!')
-            return False
-    return True
-
-
 waiting_for_input = True
 
 while waiting_for_input:
@@ -151,7 +132,8 @@ while waiting_for_input:
         waiting_for_input = False
     else:
         print('Optiune inexistenta!')
-    if not verify_chain():
+    verifier = Verification()
+    if not verifier.verify_chain(blockchain):
         print_blockchain_elements()
         print('Blockchain-ul este invalid!')
         break
