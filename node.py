@@ -98,11 +98,16 @@ if __name__ == '__main__':
         node.save_user_data()
 
         trebuie_inregistrat = False
-        for utilizator in node.blockchain.utilizatori:
-            if not utilizator.id == node.id:
-                trebuie_inregistrat = True
-                break
+        if len(node.blockchain.utilizatori) > 0:
+            for utilizator in node.blockchain.utilizatori:
+                print('{} {}'.format(utilizator.id, node.id))
 
+                if not utilizator.id == node.id:
+
+                    trebuie_inregistrat = True
+                    break
+        else:
+            trebuie_inregistrat = True
         if trebuie_inregistrat:
             node.get_detalii_utilizator()
 
