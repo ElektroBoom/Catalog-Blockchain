@@ -61,9 +61,9 @@ class Blockchain:
             return None
         return self.__chain[-1]
 
-    def add_nota(self, nume, materie, nota):
-        mark = Rezultat(nume, materie, nota)
-        self.__date_de_introdus.append(mark)
+    def add_nota(self, emitator, receptor, rezultat):
+        rezultat = Rezultat(emitator, receptor, rezultat)
+        self.__date_de_introdus.append(rezultat)
         self.save_data()
 
     def mine_block(self):

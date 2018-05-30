@@ -6,14 +6,15 @@ from utility.verification import Verification
 class Node:
 
     def __init__(self):
-        self.id = str(uuid4())
+        #self.id = str(uuid4())
+        self.id = '1234'
         self.blockchain = Blockchain(self.id)
 
     def get_nota_value(self):
-        nume = input('Nume student: ')
-        materie = input('Denumire materie: ')
-        nota = float(input('Nota: '))
-        return nume, materie, nota
+        emitator = input('Nume profesor: ')
+        receptor = input('Nume student: ')
+        rezultat = float(input('Nota: '))
+        return emitator, receptor, rezultat
 
     def get_user_choice(self):
         return input('Alegerea dumneavoastra: ')
