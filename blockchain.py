@@ -15,6 +15,7 @@ class Blockchain:
         genesis_block = Block(0, '', [], 123, 0)
         self.chain = [genesis_block]
         self.__date_de_introdus = []
+        self.utilizatori = []
         self.load_data()
         self.hosting_node = hosting_node_id
 
@@ -26,6 +27,20 @@ class Blockchain:
     def chain(self, val):
         self.__chain = val
 
+    def get_utili4zatori(self):
+        return self.utilizatori[:]
+
+    def add_utilizatori(self, val):
+        if len(self.utilizatori) > 0:
+            for utilizator in self.utilizatori:
+                print(utilizator)
+                if not val.cnp == utilizator.cnp:
+                    self.utilizatori.append(val)
+                else:
+                    print('CNP-ul exista deja!')
+        else:
+            self.utilizatori.append(val)
+
     def get_date_de_introdus(self):
         self.__date_de_introdus[:]
 
@@ -36,14 +51,16 @@ class Blockchain:
                 # file_content = f.readlines()
                 self.chain = file_content['chain']
                 self.__date_de_introdus = file_content['rez']
+                self.utilizatori = file_content['utilizatori']
         except (IOError, IndexError):
             pass
 
     def save_data(self):
         try:
             with open(nume_fisier, mode='wb') as f:
-                saved_data = {'chain': self.__chain,
-                              'rez': self.__date_de_introdus}
+                saved_data = {'chain': self.chain,
+                              'rez': self.__date_de_introdus,
+                              'utilizatori': self.utilizatori}
                 f.write(pickle.dumps(saved_data))
         except IOError:
             print('Saving fail!')
@@ -77,4 +94,3 @@ class Blockchain:
         return True
 
 
-print("Gata!")

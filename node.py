@@ -1,27 +1,55 @@
 from blockchain import Blockchain
 from uuid import uuid4
 from utility.verification import Verification
+from utilizator import Utilizator
+import pickle
+
+nume_fisier = 'myself.ekb'
 
 
 class Node:
 
     def __init__(self):
-        #self.id = str(uuid4())
-        self.id = '1234'
+        self.id = str(uuid4())
+        # self.id = '1234'
         self.blockchain = Blockchain(self.id)
 
+    def load_user_data(self):
+        incarcat = False
+        try:
+            with open(nume_fisier, mode='rb') as f:
+                file_content = pickle.loads(f.read())
+                self.id = file_content['me']
+                incarcat = True
+        except (IOError, IndexError):
+            pass
+        return incarcat
+
+    def save_user_data(self):
+        try:
+            with open(nume_fisier, mode='wb') as f:
+                saved_data = {'me': self.id}
+                f.write(pickle.dumps(saved_data))
+        except IOError:
+            print('Saving fail!')
+
+    def get_detalii_utilizator(self):
+        nume = input('Numele dumneavoastra: ')
+        prenume = input('Prenumele dumneavoastra:')
+        cnp = input('CNP-ul dumneavoastra: ')
+        self.blockchain.add_utilizatori(
+            Utilizator(self.id, nume, prenume, cnp))
+
     def get_nota_value(self):
-        emitator = input('Nume profesor: ')
         receptor = input('Nume student: ')
         rezultat = float(input('Nota: '))
-        return emitator, receptor, rezultat
+        return receptor, rezultat
 
     def get_user_choice(self):
         return input('Alegerea dumneavoastra: ')
 
     def print_blockchain_elements(self):
         for block in self.blockchain.chain:
-            print('Printez block')
             print(block)
         else:
             print('-' * 90)
@@ -34,17 +62,23 @@ class Node:
             print('1: Adauga o nota')
             print('2: Mineaza blocuri')
             print('3: Afiseaza blocuri blockchain')
+            print('4: Citeste si inregistreaza-ma')
+            print('5: afiseaza persoane')
             print('q: Opreste executia programului')
             user_choice = self.get_user_choice()
             if user_choice == '1':
                 tx_rezultate = self.get_nota_value()
-                nume, materie, nota = tx_rezultate
-                self.blockchain.add_nota(nume, materie, nota)
+                receptor, nota = tx_rezultate
+                self.blockchain.add_nota(self.id, receptor, nota)
                 print(self.blockchain.get_date_de_introdus)
             elif user_choice == '2':
                 self.blockchain.mine_block()
             elif user_choice == '3':
                 self.print_blockchain_elements()
+            elif user_choice == '4':
+                self.get_detalii_utilizator()
+            elif user_choice == '5':
+                print(self.blockchain.utilizatori)
             elif user_choice == 'q':
                 waiting_for_input = False
             else:
@@ -59,4 +93,17 @@ class Node:
 
 if __name__ == '__main__':
     node = Node()
+
+    if not node.load_user_data():
+        node.save_user_data()
+
+        trebuie_inregistrat = False
+        for utilizator in node.blockchain.utilizatori:
+            if not utilizator.id == node.id:
+                trebuie_inregistrat = True
+                break
+
+        if trebuie_inregistrat:
+            node.get_detalii_utilizator()
+
     node.listen_for_input()
