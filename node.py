@@ -12,6 +12,7 @@ class Node:
 
     def __init__(self):
         self.carnet = Carnet()
+        self.carnet.create_keys()
         self.blockchain = Blockchain(self.carnet.public_key)
 
     def load_user_data(self):
@@ -66,15 +67,20 @@ class Node:
             print('5: afiseaza persoane')
             print('6: Creaza carnet')
             print('7: Incarca carnet')
+            print('8: Salveaza chei')
             print('q: Opreste executia programului')
             user_choice = self.get_user_choice()
             if user_choice == '1':
                 tx_rezultate = self.get_nota_value()
-                receptor, nota = tx_rezultate
-                self.blockchain.add_nota(self.carnet.public_key, receptor, nota)
+                receptor, info_didactic = tx_rezultate
+                signature = self.carnet.sign(
+                    self.carnet.public_key, receptor, info_didactic)
+                self.blockchain.add_nota(
+                    self.carnet.public_key, receptor, info_didactic, signature)
                 print(self.blockchain.get_date_de_introdus)
             elif user_choice == '2':
-                self.blockchain.mine_block()
+                if not self.blockchain.mine_block():
+                    print('Minarea a esuat!')
             elif user_choice == '3':
                 self.print_blockchain_elements()
             elif user_choice == '4':
@@ -83,8 +89,12 @@ class Node:
                 print(self.blockchain.utilizatori)
             elif user_choice == '6':
                 self.carnet.create_keys()
+                self.blockchain = Blockchain(self.carnet.public_key)
             elif user_choice == '7':
-                pass
+                self.carnet.load_keys()
+                self.blockchain = Blockchain(self.carnet.public_key)
+            elif user_choice == '8':
+                self.carnet.save_keys()
             elif user_choice == 'q':
                 waiting_for_input = False
             else:
@@ -100,21 +110,21 @@ class Node:
 if __name__ == '__main__':
     node = Node()
 
-    if not node.load_user_data():
-        node.save_user_data()
+    # if not node.load_user_data():
+    #     node.save_user_data()
 
-        trebuie_inregistrat = False
-        if len(node.blockchain.utilizatori) > 0:
-            for utilizator in node.blockchain.utilizatori:
-                print('{} {}'.format(utilizator.id, node.carnet.public_key))
+    #     trebuie_inregistrat = False
+    #     if len(node.blockchain.utilizatori) > 0:
+    #         for utilizator in node.blockchain.utilizatori:
+    #             print('{} {}'.format(utilizator.id, node.carnet.public_key))
 
-                if not utilizator.id == node.carnet.public_key:
+    #             if not utilizator.id == node.carnet.public_key:
 
-                    trebuie_inregistrat = True
-                    break
-        else:
-            trebuie_inregistrat = True
-        if trebuie_inregistrat:
-            node.get_detalii_utilizator()
+    #                 trebuie_inregistrat = True
+    #                 break
+    #     else:
+    #         trebuie_inregistrat = True
+    #     if trebuie_inregistrat:
+    #         node.get_detalii_utilizator()
 
     node.listen_for_input()
