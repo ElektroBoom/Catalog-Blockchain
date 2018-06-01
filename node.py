@@ -3,6 +3,7 @@ from uuid import uuid4
 from utility.verification import Verification
 from utilizator import Utilizator
 import pickle
+from carnet import Carnet
 
 nume_fisier = 'myself.ekb'
 
@@ -10,16 +11,15 @@ nume_fisier = 'myself.ekb'
 class Node:
 
     def __init__(self):
-        self.id = str(uuid4())
-        # self.id = '1234'
-        self.blockchain = Blockchain(self.id)
+        self.carnet = Carnet()
+        self.blockchain = Blockchain(self.carnet.public_key)
 
     def load_user_data(self):
         incarcat = False
         try:
             with open(nume_fisier, mode='rb') as f:
                 file_content = pickle.loads(f.read())
-                self.id = file_content['me']
+                self.carnet.public_key = file_content['me']
                 incarcat = True
         except (IOError, IndexError):
             pass
@@ -28,7 +28,7 @@ class Node:
     def save_user_data(self):
         try:
             with open(nume_fisier, mode='wb') as f:
-                saved_data = {'me': self.id}
+                saved_data = {'me': self.carnet.public_key}
                 f.write(pickle.dumps(saved_data))
         except IOError:
             print('Saving fail!')
@@ -38,7 +38,7 @@ class Node:
         prenume = input('Prenumele dumneavoastra:')
         cnp = input('CNP-ul dumneavoastra: ')
         self.blockchain.add_utilizatori(
-            Utilizator(self.id, nume, prenume, cnp))
+            Utilizator(self.carnet.public_key, nume, prenume, cnp))
 
     def get_nota_value(self):
         receptor = input('Nume student: ')
@@ -64,12 +64,14 @@ class Node:
             print('3: Afiseaza blocuri blockchain')
             print('4: Citeste si inregistreaza-ma')
             print('5: afiseaza persoane')
+            print('6: Creaza carnet')
+            print('7: Incarca carnet')
             print('q: Opreste executia programului')
             user_choice = self.get_user_choice()
             if user_choice == '1':
                 tx_rezultate = self.get_nota_value()
                 receptor, nota = tx_rezultate
-                self.blockchain.add_nota(self.id, receptor, nota)
+                self.blockchain.add_nota(self.carnet.public_key, receptor, nota)
                 print(self.blockchain.get_date_de_introdus)
             elif user_choice == '2':
                 self.blockchain.mine_block()
@@ -79,6 +81,10 @@ class Node:
                 self.get_detalii_utilizator()
             elif user_choice == '5':
                 print(self.blockchain.utilizatori)
+            elif user_choice == '6':
+                self.carnet.create_keys()
+            elif user_choice == '7':
+                pass
             elif user_choice == 'q':
                 waiting_for_input = False
             else:
@@ -100,9 +106,9 @@ if __name__ == '__main__':
         trebuie_inregistrat = False
         if len(node.blockchain.utilizatori) > 0:
             for utilizator in node.blockchain.utilizatori:
-                print('{} {}'.format(utilizator.id, node.id))
+                print('{} {}'.format(utilizator.id, node.carnet.public_key))
 
-                if not utilizator.id == node.id:
+                if not utilizator.id == node.carnet.public_key:
 
                     trebuie_inregistrat = True
                     break
