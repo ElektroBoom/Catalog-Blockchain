@@ -10,4 +10,5 @@ def hash_block(block):
     hashable_block = block.__dict__.copy()
     hashable_block['rezultate'] = [rez.to_ordered_dict()
                                    for rez in hashable_block['rezultate']]
+
     return hl.sha256(json.dumps(hashable_block, sort_keys=True).encode()).hexdigest()

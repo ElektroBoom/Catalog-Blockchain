@@ -13,4 +13,4 @@ class Rezultat(Printable):
         return str(self.__dict__)
 
     def to_ordered_dict(self):
-        return OrderedDict([('emitator', self.emitator), ('receptor', self.receptor), ('rezultat', self.info_didactic)])
+        return OrderedDict([('emitator', self.emitator), ('receptor', self.receptor), ('rezultat', self.info_didactic.to_ordered_dict())])

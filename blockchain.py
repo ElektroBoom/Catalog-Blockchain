@@ -97,6 +97,7 @@ class Blockchain:
             return False
         self.__date_de_introdus.append(rezultat)
         self.save_data()
+        return True
 
     def mine_block(self):
         if self.hosting_node == None:

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from carnet import Carnet
 from blockchain import Blockchain
@@ -53,9 +53,7 @@ def load_keys():
 def mine():
     block = blockchain.mine_block()
     if block != None:
-        dict_block = block.__dict__.copy()
-        dict_block['rezultate'] = [
-            rez.__dict__ for rez in dict_block['rezultate']]
+        dict_block = vars(block).copy()
         reponse = {
             'message': 'Inserarea unui bloc a reusit.',
             'block': dict_block
@@ -69,6 +67,48 @@ def mine():
         return jsonify(reponse), 500
 
 
+@app.route('/add_rezultat', methods=['POST'])
+def add_info_didactic():
+    if carnet.public_key == None:
+        reponse = {
+            'message': 'Nu e setat carnetul'
+        }
+        return jsonify(reponse), 400
+    values = request.get_json()
+    if not values:
+        reponse = {
+            'message': 'Nu am date'
+        }
+        return jsonify(reponse), 400
+    required_fields = ['receptor', 'info_didactic']
+    if not all(field in values for field in required_fields):
+        reponse = {
+            'message': 'Lipsesc date'
+        }
+        return jsonify(reponse), 400
+    receptor = values['receptor']
+    info_didactic = values['info_didactic']
+    signature = carnet.sign(carnet.public_key, receptor, info_didactic)
+    succes = blockchain.add_nota(
+        carnet.public_key, receptor, info_didactic, signature)
+    if succes:
+        reponse = {
+            'message': 'Adaugarea de nota/absenta a reusit',
+            'info_didactic': {
+                'emitator': carnet.public_key,
+                'receptor': receptor,
+                'info_didactic': info_didactic,
+                'signature': signature
+            }
+        }
+        return jsonify(reponse), 201
+    else:
+        reponse = {
+            'message': 'Adaugarea de nota/absenta a esuat'
+        }
+        return jsonify(reponse), 400
+
+
 @app.route('/chain', methods=['GET'])
 def get_chain():
     chain_shanpshot = blockchain.chain
@@ -77,6 +117,22 @@ def get_chain():
         dict_block['rezultate'] = [
             rez.__dict__ for rez in dict_block['rezultate']]
     return jsonify(dict_chain), 200
+
+
+@app.route('/rezultate', methods=['GET'])
+def get_rezultate():
+    rezultate = blockchain.get_rezultate()
+    if rezultate != None:
+        respone = {
+            'message': 'Afisarea rezultatelor a reusit.',
+            'rezultate': rezultate
+        }
+    else:
+        respone = {
+            'message': 'Afisarea rezultatelor a esuat.',
+            'carnet_set_up': carnet.public_key != None
+        }
+        return jsonify(respone), 500
 
 
 if __name__ == '__main__':

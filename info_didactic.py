@@ -1,4 +1,5 @@
 from utility.printable import Printable
+from collections import OrderedDict
 
 
 class InfoDidactic(Printable):
@@ -12,3 +13,14 @@ class InfoDidactic(Printable):
         self.unitate_invatamant = unitate_invatamant
         self.specializare = specializare
         self.comentariu = comentariu
+
+    def to_ordered_dict(self):
+        return OrderedDict([('tip_info', self.tip_info),
+                            ('materie', self.materie),
+                            ('rezultat', self.descriere),
+                            ('rezultat', self.nota),
+                            ('rezultat', self.an_scolar),
+                            ('rezultat', self.data_intamplarii),
+                            ('rezultat', self.unitate_invatamant),
+                            ('rezultat', self.specializare),
+                            ('rezultat', self.comentariu)])

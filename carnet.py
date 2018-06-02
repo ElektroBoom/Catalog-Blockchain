@@ -32,7 +32,7 @@ class Carnet:
             with open('carnet.txt', mode='r') as f:
                 keys = f.readlines()
                 public_key = keys[0][:-1]
-                private_key = keys[0]
+                private_key = keys[1]
                 self.public_key = public_key
                 self.private_key = private_key
                 return True
