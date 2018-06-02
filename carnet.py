@@ -22,8 +22,10 @@ class Carnet:
                     f.write(self.public_key)
                     f.write('\n')
                     f.write(self.private_key)
+                    return True
             except(IOError, IndexError):
                 print('Salvarea cheilor a esuat!')
+                return False
 
     def load_keys(self):
         try:
@@ -33,8 +35,10 @@ class Carnet:
                 private_key = keys[0]
                 self.public_key = public_key
                 self.private_key = private_key
+                return True
         except(IOError, IndexError):
             print('Incarcarea cheilor a esuat!')
+            return False
 
     def generate_keys(self):
         private_key = RSA.generate(1024, Crypto.Random.new().read)
