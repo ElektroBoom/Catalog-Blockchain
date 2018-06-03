@@ -91,15 +91,15 @@ class Blockchain:
 
     def mine_block(self):
         if self.hosting_node == None:
-            return False
+            return None
         hashed_last_block = hash_block(self.get_last_blockchain_value())
         proof = self.proof_of_work()
         block = Block(len(self.__chain), hashed_last_block,
                       self.__date_de_introdus, proof)
         for rez in block.rezultate:
             if not Carnet.verify_rezultat(rez):
-                return False
+                return None
         self.__chain.append(block)
         self.__date_de_introdus = []
         self.save_data()
-        return True
+        return block
