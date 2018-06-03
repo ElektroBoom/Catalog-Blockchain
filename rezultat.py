@@ -3,11 +3,10 @@ from collections import OrderedDict
 
 
 class Rezultat(Printable):
-    def __init__(self, emitator, receptor, info_didactic, signature):
+    def __init__(self, emitator, receptor, info_didactic):
         self.emitator = emitator
         self.receptor = receptor
         self.info_didactic = info_didactic
-        self.signature = signature
 
     def __repr__(self):
         return str(self.__dict__)
