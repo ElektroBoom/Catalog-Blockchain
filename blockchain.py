@@ -66,6 +66,13 @@ class Blockchain:
         except IOError:
             print('Saving fail!')
 
+    def get_rezultate(self, id='123'):
+        lista_rezultate = []
+        for block in self.chain:
+            for rez in block.rezultate:
+                if rez.receptor == id:
+                    lista_rezultate.append(rez)
+        return lista_rezultate
     def proof_of_work(self):
         last_block = self.__chain[-1]
         last_hash = hash_block(last_block)
