@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 from carnet import Carnet
@@ -10,6 +10,11 @@ app = Flask(__name__)
 carnet = Carnet()
 blockchain = Blockchain(carnet.public_key)
 CORS(app)
+
+
+@app.route('/', methods=['GET'])
+def get_ui():
+    return send_from_directory('ui', 'node.html')
 
 
 @app.route('/carnet', methods=['POST'])
@@ -47,11 +52,6 @@ def load_keys():
         return jsonify(response), 500
 
 
-@app.route('/', methods=['GET'])
-def get_ui():
-    return 'Merge'
-
-
 @app.route('/mine', methods=['POST'])
 def mine():
     block = blockchain.mine_block()
@@ -75,7 +75,7 @@ def mine():
 @app.route('/rezultate', methods=['GET'])
 def get_rezultate():
     rezultate = blockchain.get_date_de_introdus()
-    dict_rezultate = [rez.to_ordered_dict for rez in rezultate]
+    dict_rezultate = [rez.to_ordered_dict() for rez in rezultate]
     return jsonify(dict_rezultate), 200
 
 

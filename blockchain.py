@@ -43,7 +43,7 @@ class Blockchain:
             self.utilizatori.append(val)
 
     def get_date_de_introdus(self):
-        self.__date_de_introdus[:]
+        return self.__date_de_introdus[:]
 
     def load_data(self):
         try:
