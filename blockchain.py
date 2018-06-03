@@ -56,16 +56,6 @@ class Blockchain:
         except (IOError, IndexError):
             pass
 
-    def get_rezultate(self, receptor='123'):
-        lista_note = []
-        for block in self.chain:
-            print(block)
-            for rez in block.rezultate:
-                print(rez)
-                if rez.receptor == receptor:
-                    lista_note.append(rez.info_didactic)
-        print('lista de note este', lista_note)
-
     def save_data(self):
         try:
             with open(nume_fisier, mode='wb') as f:
@@ -89,10 +79,10 @@ class Blockchain:
             return None
         return self.__chain[-1]
 
-    def add_nota(self, emitator, receptor, info_didactic, signature):
+    def add_nota(self, emitator, receptor, rezultat, signature):
         if self.hosting_node == None:
             return False
-        rezultat = Rezultat(emitator, receptor, info_didactic, signature)
+        rezultat = Rezultat(emitator, receptor, rezultat, signature)
         if not Carnet.verify_rezultat(rezultat):
             return False
         self.__date_de_introdus.append(rezultat)
@@ -101,15 +91,15 @@ class Blockchain:
 
     def mine_block(self):
         if self.hosting_node == None:
-            return None
+            return False
         hashed_last_block = hash_block(self.get_last_blockchain_value())
         proof = self.proof_of_work()
         block = Block(len(self.__chain), hashed_last_block,
                       self.__date_de_introdus, proof)
         for rez in block.rezultate:
             if not Carnet.verify_rezultat(rez):
-                return None
+                return False
         self.__chain.append(block)
         self.__date_de_introdus = []
         self.save_data()
-        return block
+        return True

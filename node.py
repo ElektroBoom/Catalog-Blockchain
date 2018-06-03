@@ -14,6 +14,7 @@ def get_ui():
     return 'merge'
 
 
+<<<<<<< HEAD
 @app.route('/carnet', methods=['POST'])
 def create_keys():
     carnet.create_keys()
@@ -109,6 +110,8 @@ def add_info_didactic():
         return jsonify(reponse), 400
 
 
+=======
+>>>>>>> parent of b060fc7... InfoDidactic class implementation
 @app.route('/chain', methods=['GET'])
 def get_chain():
     chain_shanpshot = blockchain.chain
