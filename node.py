@@ -4,7 +4,6 @@ from flask_cors import CORS
 from carnet import Carnet
 from blockchain import Blockchain
 from info_didactic import InfoDidactic
-from types import SimpleNamespace
 from json import loads
 
 app = Flask(__name__)

@@ -1,3 +1,5 @@
 __pycache__/
-blockchain.ekb
+*.ekb
 *.pyc
+*.txt
+*.json
