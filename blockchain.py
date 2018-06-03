@@ -6,6 +6,7 @@ from utility.verification import Verification
 from utility.hash_util import hash_block
 from block import Block
 from rezultat import Rezultat
+from carnet import Carnet
 
 nume_fisier = 'blockchain.ekb'
 
@@ -78,10 +79,12 @@ class Blockchain:
             return None
         return self.__chain[-1]
 
-    def add_nota(self, emitator, receptor, rezultat):
+    def add_nota(self, emitator, receptor, rezultat, semnatura):
         if self.hosting_node == None:
             return False
-        rezultat = Rezultat(emitator, receptor, rezultat)
+        rezultat = Rezultat(emitator, receptor, rezultat, semnatura)
+        if not Carnet.verify_rezultat(rezultat):
+            return False
         self.__date_de_introdus.append(rezultat)
         self.save_data()
         return True
@@ -93,6 +96,9 @@ class Blockchain:
         proof = self.proof_of_work()
         block = Block(len(self.__chain), hashed_last_block,
                       self.__date_de_introdus, proof)
+        for rez in block.rezultate:
+            if not Carnet.verify_rezultat(rez):
+                return False
         self.__chain.append(block)
         self.__date_de_introdus = []
         self.save_data()

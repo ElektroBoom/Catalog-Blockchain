@@ -1,4 +1,6 @@
 from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA256
 import Crypto.Random
 import binascii
 
@@ -38,3 +40,19 @@ class Carnet:
         private_key = RSA.generate(1024, Crypto.Random.new().read)
         public_key = private_key.publickey()
         return (binascii.hexlify(private_key.exportKey(format='DER')).decode('ascii'), binascii.hexlify(public_key.exportKey(format='DER')).decode('ascii'))
+
+    def sign_rezultat(self, emitator, receptor, info_didactic):
+        signer = PKCS1_v1_5.new(RSA.importKey(
+            binascii.unhexlify(self.private_key)))
+        h = SHA256.new((str(emitator) + str(receptor) +
+                        str(info_didactic)).encode('utf8'))
+        signature = signer.sign(h)
+        return binascii.hexlify(signature).decode('ascii')
+
+    @staticmethod
+    def verify_rezultat(rezultat):
+        public_key = RSA.import_key(binascii.unhexlify(rezultat.emitator))
+        verifier = PKCS1_v1_5.new(public_key)
+        h = SHA256.new((str(rezultat.emitator) + str(rezultat.receptor) +
+                        str(rezultat.info_didactic)).encode('utf8'))
+        return verifier.verify(h, binascii.unhexlify(rezultat.semnatura))

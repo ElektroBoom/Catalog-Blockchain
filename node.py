@@ -5,6 +5,7 @@ from utility.verification import Verification
 from utilizator import Utilizator
 import pickle
 from carnet import Carnet
+from info_didactic import InfoDidactic
 
 nume_fisier = 'carnet.txt'
 
@@ -34,9 +35,17 @@ class Node:
             Utilizator(self.carnet.public_key, nume, prenume, cnp))
 
     def get_nota_value(self):
-        receptor = input('Nume student: ')
-        rezultat = float(input('Nota: '))
-        return receptor, rezultat
+        receptor = input('id student: ')
+        tip_info = input('tip_info ')
+        materie = input('materie ')
+        descriere = input('descriere ')
+        nota = input('nota ')
+        an_scolar = input('an_scolar ')
+        data_intamplarii = input('data_intamplarii ')
+        unitate_invatamant = input('unitate_invatamant ')
+        specializare = input('specializare ')
+        comentariu = input('comentariu ')
+        return receptor, InfoDidactic(tip_info, materie, descriere,  nota, an_scolar, data_intamplarii, unitate_invatamant, specializare, comentariu)
 
     def get_user_choice(self):
         return input('Alegerea dumneavoastra: ')
@@ -64,8 +73,10 @@ class Node:
             if user_choice == '1':
                 tx_rezultate = self.get_nota_value()
                 receptor, nota = tx_rezultate
-                self.blockchain.add_nota(
+                semnatura = self.carnet.sign_rezultat(
                     self.carnet.public_key, receptor, nota)
+                self.blockchain.add_nota(
+                    self.carnet.public_key, receptor, nota, semnatura)
                 print(self.blockchain.get_date_de_introdus)
             elif user_choice == '2':
                 if not self.blockchain.mine_block():
