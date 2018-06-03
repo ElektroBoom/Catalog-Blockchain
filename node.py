@@ -1,9 +1,7 @@
-<<<<<<< HEAD
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from carnet import Carnet
-=======
->>>>>>> parent of ef8611e... flask import, chain server response, node.py rename to old_node.py
 from blockchain import Blockchain
 from uuid import uuid4
 from utility.verification import Verification
@@ -55,114 +53,9 @@ class Node:
     def get_user_choice(self):
         return input('Alegerea dumneavoastra: ')
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-@app.route('/carnet', methods=['POST'])
-def create_keys():
-    carnet.create_keys()
-    if carnet.save_keys():
-        respone = {
-            'public_key': carnet.public_key,
-            'private_key': carnet.private_key
-        }
-        global blockchain
-        blockchain = Blockchain(carnet.public_key)
-        return jsonify(respone), 201
-    else:
-        respone = {
-            'message': 'Salvarea cheilor a esuat.'
-        }
-        return jsonify(respone), 500
 
 
-@app.route('/carnet', methods=['GET'])
-def load_keys():
-    if carnet.load_keys():
-        respone = {
-            'public_key': carnet.public_key,
-            'private_key': carnet.private_key
-        }
-        global blockchain
-        blockchain = Blockchain(carnet.public_key)
-        return jsonify(respone), 201
-    else:
-        respone = {
-            'message': 'Incarcarea cheilor a esuat.'
-        }
-        return jsonify(respone), 500
 
-
-@app.route('/mine', methods=['POST'])
-def mine():
-    block = blockchain.mine_block()
-    if block != None:
-        dict_block = vars(block).copy()
-        reponse = {
-            'message': 'Inserarea unui bloc a reusit.',
-            'block': dict_block
-        }
-        return jsonify(reponse), 201
-    else:
-        reponse = {
-            'message': 'Inserarea unui bloc a esuat.',
-            'carnet_set_up': carnet.public_key != None
-        }
-        return jsonify(reponse), 500
-
-
-@app.route('/add_rezultat', methods=['POST'])
-def add_info_didactic():
-    if carnet.public_key == None:
-        reponse = {
-            'message': 'Nu e setat carnetul'
-        }
-        return jsonify(reponse), 400
-    values = request.get_json()
-    if not values:
-        reponse = {
-            'message': 'Nu am date'
-        }
-        return jsonify(reponse), 400
-    required_fields = ['receptor', 'info_didactic']
-    if not all(field in values for field in required_fields):
-        reponse = {
-            'message': 'Lipsesc date'
-        }
-        return jsonify(reponse), 400
-    receptor = values['receptor']
-    info_didactic = values['info_didactic']
-    signature = carnet.sign(carnet.public_key, receptor, info_didactic)
-    succes = blockchain.add_nota(
-        carnet.public_key, receptor, info_didactic, signature)
-    if succes:
-        reponse = {
-            'message': 'Adaugarea de nota/absenta a reusit',
-            'info_didactic': {
-                'emitator': carnet.public_key,
-                'receptor': receptor,
-                'info_didactic': info_didactic,
-                'signature': signature
-            }
-        }
-        return jsonify(reponse), 201
-    else:
-        reponse = {
-            'message': 'Adaugarea de nota/absenta a esuat'
-        }
-        return jsonify(reponse), 400
-
-
-=======
->>>>>>> parent of b060fc7... InfoDidactic class implementation
-@app.route('/chain', methods=['GET'])
-def get_chain():
-    chain_shanpshot = blockchain.chain
-    dict_chain = [block.__dict__.copy() for block in chain_shanpshot]
-    for dict_block in dict_chain:
-        dict_block['rezultate'] = [
-            rez.__dict__ for rez in dict_block['rezultate']]
-    return jsonify(dict_chain), 200
-=======
     def print_blockchain_elements(self):
         for block in self.blockchain.chain:
             print(block)
@@ -219,43 +112,12 @@ def get_chain():
                 break
         else:
             print('Utilizatorul a iesit!')
->>>>>>> parent of ef8611e... flask import, chain server response, node.py rename to old_node.py
 
 
-@app.route('/rezultate', methods=['GET'])
-def get_rezultate():
-    rezultate = blockchain.get_rezultate()
-    if rezultate != None:
-        respone = {
-            'message': 'Afisarea rezultatelor a reusit.',
-            'rezultate': rezultate
-        }
-    else:
-        respone = {
-            'message': 'Afisarea rezultatelor a esuat.',
-            'carnet_set_up': carnet.public_key != None
-        }
-        return jsonify(respone), 500
+
 
 
 if __name__ == '__main__':
     node = Node()
-
-    # if not node.load_user_data():
-    #     node.save_user_data()
-
-    #     trebuie_inregistrat = False
-    #     if len(node.blockchain.utilizatori) > 0:
-    #         for utilizator in node.blockchain.utilizatori:
-    #             print('{} {}'.format(utilizator.id, node.carnet.public_key))
-
-    #             if not utilizator.id == node.carnet.public_key:
-
-    #                 trebuie_inregistrat = True
-    #                 break
-    #     else:
-    #         trebuie_inregistrat = True
-    #     if trebuie_inregistrat:
-    #         node.get_detalii_utilizator()
 
     node.listen_for_input()
