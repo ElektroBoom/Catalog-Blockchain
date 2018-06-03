@@ -14,12 +14,12 @@ CORS(app)
 def create_keys():
     carnet.create_keys()
     if carnet.save_keys():
+        global blockchain
+        blockchain = Blockchain(carnet.public_key)
         response = {
             'public_key': carnet.public_key,
             'private_key': carnet.private_key
         }
-        global blockchain
-        blockchain = Blockchain(carnet.public_key)
         return jsonify(response), 201
     else:
         response = {
@@ -31,12 +31,12 @@ def create_keys():
 @app.route('/carnet', methods=['GET'])
 def load_keys():
     if carnet.load_keys():
+        global blockchain
+        blockchain = Blockchain(carnet.public_key)
         response = {
             'public_key': carnet.public_key,
             'private_key': carnet.private_key
         }
-        global blockchain
-        blockchain = Blockchain(carnet.public_key)
         return jsonify(response), 201
     else:
         response = {
@@ -78,6 +78,24 @@ def get_chain():
         dict_block['rezultate'] = [rez.to_ordered_dict()
                                    for rez in dict_block['rezultate']]
     return jsonify(dict_chain), 200
+
+
+@app.route('/rezultate', methods=['GET'])
+def get_rezultate():
+    rezultate = blockchain.get_rezultate()
+    if rezultate != None:
+        response = {
+            'message': 'Returnarea rezultate a reusit',
+            'rezultate': [rez.to_ordered_dict() for rez in rezultate]
+        }
+        return jsonify(response), 200
+
+    else:
+        response = {
+            'message': 'Retunartea rezultatelor a esuat',
+            'carnet_set_up': carnet.public_key != None
+        }
+        return jsonify(response), 500
 
 
 if __name__ == '__main__':
