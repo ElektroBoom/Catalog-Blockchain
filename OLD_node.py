@@ -69,6 +69,7 @@ class Node:
             print('6: Incarca carnet')
             print('7: Salveaza chei')
             print('8: Lista rezultate')
+            print('9: Afiseaaza date de introdus')
             print('q: Opreste executia programului')
             user_choice = self.get_user_choice()
             if user_choice == '1':
@@ -95,7 +96,11 @@ class Node:
             elif user_choice == '7':
                 self.carnet.save_keys()
             elif user_choice == '8':
-                self.blockchain.get_rezultate()
+                self.blockchain.get_rezultate('123')
+            elif user_choice == '9':
+                dateele = self.blockchain.get_date_de_introdus()
+                print(dateele)
+
             elif user_choice == 'q':
                 waiting_for_input = False
             else:

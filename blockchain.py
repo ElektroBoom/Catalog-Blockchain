@@ -66,7 +66,7 @@ class Blockchain:
         except IOError:
             print('Saving fail!')
 
-    def get_rezultate(self, id='123'):
+    def get_rezultate(self, id):
         if self.hosting_node == None:
             return None
         lista_rezultate = []

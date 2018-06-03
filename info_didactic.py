@@ -17,10 +17,10 @@ class InfoDidactic(Printable):
     def to_ordered_dict(self):
         return OrderedDict([('tip_info', self.tip_info),
                             ('materie', self.materie),
-                            ('rezultat', self.descriere),
-                            ('rezultat', self.nota),
-                            ('rezultat', self.an_scolar),
-                            ('rezultat', self.data_intamplarii),
-                            ('rezultat', self.unitate_invatamant),
-                            ('rezultat', self.specializare),
-                            ('rezultat', self.comentariu)])
+                            ('descriere', self.descriere),
+                            ('nota', self.nota),
+                            ('an_scolar', self.an_scolar),
+                            ('data_intamplarii', self.data_intamplarii),
+                            ('unitate_invatamant', self.unitate_invatamant),
+                            ('specializare', self.specializare),
+                            ('comentariu', self.comentariu)])

@@ -72,6 +72,13 @@ def mine():
         return jsonify(response), 500
 
 
+@app.route('/rezultate', methods=['GET'])
+def get_rezultate():
+    rezultate = blockchain.get_date_de_introdus()
+    dict_rezultate = [rez.to_ordered_dict for rez in rezultate]
+    return jsonify(dict_rezultate), 200
+
+
 @app.route('/chain', methods=['GET'])
 def get_chain():
     chain_snapshot = blockchain.chain
@@ -132,9 +139,15 @@ def add_rezultat():
         return jsonify(response), 500
 
 
-@app.route('/rezultate', methods=['GET'])
-def get_rezultate():
-    rezultate = blockchain.get_rezultate()
+@app.route('/rezultat', methods=['POST'])
+def get_rezultate_pentru_id():
+    values = request.get_json()
+    if not values:
+        response = {
+            'message': 'Nu am gasit date'
+        }
+        return jsonify(response), 400
+    rezultate = blockchain.get_rezultate(values['id'])
     if rezultate != None:
         response = {
             'message': 'Returnarea rezultate a reusit',
