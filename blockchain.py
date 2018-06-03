@@ -89,10 +89,10 @@ class Blockchain:
             return None
         return self.__chain[-1]
 
-    def add_nota(self, emitator, receptor, rezultat, semnatura):
+    def add_nota(self, emitator, receptor, info_didactic, semnatura):
         if self.hosting_node == None:
             return False
-        rezultat = Rezultat(emitator, receptor, rezultat, semnatura)
+        rezultat = Rezultat(emitator, receptor, info_didactic, semnatura)
         if not Carnet.verify_rezultat(rezultat):
             return False
         self.__date_de_introdus.append(rezultat)
