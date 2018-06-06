@@ -139,7 +139,7 @@ def add_rezultat():
         return jsonify(response), 500
 
 
-@app.route('/rezultat', methods=['POST'])
+@app.route('/rezultat_id', methods=['POST'])
 def get_rezultate_pentru_id():
     values = request.get_json()
     if not values:
