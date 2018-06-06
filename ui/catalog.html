@@ -1,0 +1,158 @@
+<html>
+
+<head>
+    <title>
+        Catalog pe BlockChain
+    </title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <button @click="loadBlockChain">Load blockchain</button>
+
+
+        <table v-if="blockchain.length > 0" border="1">
+            <tr>
+                <td>
+                    index
+                </td>
+                <td>
+                    previous_hash
+                </td>
+                <td>
+                    proof
+                </td>
+                <td>
+                    rezultate
+                </td>
+                <td>
+                    timestamp
+                </td>
+            </tr>
+            <tr v-for="block in blockchain">
+                <td>
+                    {{ block.index }}
+                </td>
+                <td>
+                    {{ block.previous_hash }}
+                </td>
+                <td>
+                    {{ block.proof }}
+                </td>
+                <td>
+                    <table v-if="block.rezultate.length > 0" border="1">
+                        <tr>
+                            <td>
+                                emitator
+                            </td>
+                            <td>
+                                receptor
+                            </td>
+                            <td>
+                                rezultat
+                            </td>
+                        </tr>
+                        <tr v-for="rez in block.rezultate">
+                            <td>
+                                {{rez.emitator}}
+                            </td>>
+                            <td>
+                                {{rez.receptor}}
+                            </td>>
+                            <td>
+                                <table border="1">
+                                    <tr>
+                                        <td>
+                                            an_scolar
+                                        </td>
+                                        <td>
+                                            comentariu
+                                        </td>
+                                        <td>
+                                            data_intamplarii
+                                        </td>
+                                        <td>
+                                            descriere
+                                        </td>
+                                        <td>
+                                            materie
+                                        </td>
+                                        <td>
+                                            nota
+                                        </td>
+                                        <td>
+                                            specializare
+                                        </td>
+                                        <td>
+                                            tip_info
+                                        </td>
+                                        <td>
+                                            unitate_invatamant
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            {{rez.rezultat.an_scolar}}
+                                        </td>
+                                        <td>
+                                            {{rez.rezultat.comentariu}}
+                                        </td>
+                                        <td>
+                                            {{rez.rezultat.data_intamplarii}}
+                                        </td>
+                                        <td>
+                                            {{rez.rezultat.descriere}}
+                                        </td>
+                                        <td>
+                                            {{rez.rezultat.materie}}
+                                        </td>
+                                        <td>
+                                            {{rez.rezultat.nota}}
+                                        </td>
+                                        <td>
+                                            {{rez.rezultat.specializare}}
+                                        </td>
+                                        <td>
+                                            {{rez.rezultat.tip_info}}
+                                        </td>
+                                        <td>
+                                            {{rez.rezultat.unitate_invatamant}}
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </td>>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    {{ block.timestamp }}
+                </td>
+
+            </tr>
+        </table>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                blockchain: []
+
+
+            },
+            methods: {
+                loadBlockChain: function () {
+                    var vm = this
+                    axios.get('/chain').then(function (response) {
+                        vm.blockchain = response.data
+                        console.log(response.data)
+                    })
+
+                }
+            }
+        })
+    </script>
+
+</html>
