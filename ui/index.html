@@ -1,0 +1,151 @@
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<title>
+		Catalog BlockChain
+	</title>
+	<link rel="apple-touch-icon" href="https://i.imgur.com/cUm0ehh.png">
+	<style>
+		body {
+			overflow: scroll;
+		}
+
+		.scroll {
+			overflow: auto;
+		}
+	</style>
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top font-weight-bold shadow-lg p-3 ">
+		<a class="navbar-brand" href="https://github.com/ElektroBoom/Catalog-Blockchain" target="_blan">
+			<img src="http://www.macdrifter.com/theme/images/octocat-snow.svg" width="36px">
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse justify-content-between" id="collapsibleNavbar">
+			<ul class="nav navbar-nav">
+				<li class="nav-item ">
+					<a class="nav-link" href="#mydata" data-toggle="pill">
+						<h5>Datele mele</h5>
+					</a>
+				</li>
+				<li class="nav-item ">
+					<a class="nav-link" href="#rezultate" data-toggle="pill">
+						<h5>Rezultate</h5>
+					</a>
+				</li>
+				<li @click="loadBlockChain" class="nav-item ">
+					<a class="nav-link" href="#blockchain" data-toggle="pill">
+						<h5>BlockChain</h5>
+					</a>
+				</li>
+				<div class="dropdown-divider"></div>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="nav-item ">
+					<div class="input-group ">
+						<input type="text" class="form-control font-weight-bold" placeholder="ID Persoana">
+						<div class="input-group-append">
+							<span class="input-group-text bg-dark">
+								<a href="#search" data-toggle="pill">
+									<img src="https://i.imgur.com/q0hJfxt.png" width="24px">
+								</a>
+							</span>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<div class="tab-content" id="app">
+		<div style="margin-top: 100px"></div>
+
+		<div v-if="succes" class="alert alert-success container" role="alert">
+			{{succes}}
+		</div>
+		<div v-if="eroare" class="alert alert-danger container" role="alert">
+			{{eroare}}
+		</div>
+		<div id="mydata" class="tab-pane fade in">
+			<h3>DAtele mele 1</h3>
+		</div>
+		<div id="rezultate" class="tab-pane fade in">
+			<div class="container">
+				<h2>Rezultatele mele</h2>
+				<table class="table table-dark table-striped shadow-lg text-center">
+					<thead class="font-weight-bold">
+						<tr>
+							<th>Tip</th>
+							<th>Materie</th>
+							<th>Descriere</th>
+							<th>Nota</th>
+							<th>An invatamant</th>
+							<th>Data</th>
+							<th>Unitate de invatamant</th>
+							<th>Specializare</th>
+							<th>Comentariu</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Nota</td>
+							<td>Mate</td>
+							<td>materie frumoasa</td>
+							<td>10</td>
+							<td>2</td>
+							<td>05/10/2018</td>
+							<td>ACIEE</td>
+							<td>CTI</td>
+							<td>Bravo!</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div id="blockchain" class="tab-pane fade in" style="margin-top: 100px">
+			<div class="container">
+				<button @click="loadBlockChain" class="btn btn-dark">Date blockchain</button>
+				<br>
+				<div class="scroll">
+					<pre v-if="blockchain.length > 0">
+
+						{{blockchain}}
+					</pre>
+				</div>
+			</div>
+		</div>
+
+		<div id="search" class="tab-pane fade in" style="margin-top: 100px">
+			<h3>search 1</h3>
+		</div>
+	</div>
+
+	<script>
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				blockchain: [],
+				succes: null,
+				eroare: null
+			},
+			methods: {
+				loadBlockChain: function () {
+					var vm = this
+					axios.get('/chain').then(function (response) {
+						vm.blockchain = response.data
+						console.log(response.data)
+					})
+
+				}
+			}
+		})
+	</script>
+</body>
+
+</html>

@@ -14,7 +14,7 @@ CORS(app)
 
 @app.route('/', methods=['GET'])
 def get_ui():
-    return send_from_directory('ui', 'catalog.html')
+    return send_from_directory('ui', 'index.html')
 
 
 @app.route('/carnet', methods=['POST'])
