@@ -383,6 +383,9 @@
 			document.getElementById(camp).select();
 			document.execCommand("copy");
 		}
+		$('.navbar-nav>li>a').on('click', function () {
+			$('.navbar-collapse').collapse('hide');
+		});
 	</script>
 </body>
 
