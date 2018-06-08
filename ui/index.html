@@ -12,6 +12,7 @@
 	<link rel="apple-touch-icon" href="https://i.imgur.com/cUm0ehh.png">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 	<meta name="author" content="Iulian Oancea">
+	<meta http-equiv="Cache-control" content="public">
 	<style>
 		body {
 			overflow: scroll;
@@ -101,6 +102,24 @@
 			left: 50%;
 			transform: translate(-50%, -50%);
 		}
+
+		.loader {
+			border: 10px solid lightgray;
+			border-radius: 50%;
+			border-top: 10px solid black;
+			width: 50px;
+			height: 50px;
+			animation: spin .3s linear infinite;
+		}
+
+		@keyframes spin {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
 	</style>
 </head>
 
@@ -121,7 +140,7 @@
 				</li>
 				<li class="nav-item ">
 					<a class="nav-link" href="#mydata" data-toggle="pill">
-						<h5>Datele mele</h5>
+						<h5>Chei</h5>
 					</a>
 				</li>
 				<li class="nav-item ">
@@ -155,6 +174,9 @@
 	<div class="tab-content" id="app">
 		<div style="margin-top: 100px"></div>
 
+		<div v-if="incarca" class="loader container"></div>
+		<br>
+
 		<div v-if="succes" class="alert alert-success container" role="alert">
 			{{succes}}
 		</div>
@@ -175,10 +197,10 @@
 		<div id="mydata" class="tab-pane fade in">
 			<div class="container">
 				<div class="input-group">
-					<button class="btn btn-dark form-control">
+					<button @click="loadCarnet" class="btn btn-dark form-control">
 						Incarca chei
 					</button>
-					<button class="btn btn-dark form-control">
+					<button @click="createCarnet" class="btn btn-dark form-control">
 						Genereaza chei
 					</button>
 				</div>
@@ -361,6 +383,7 @@
 				blockchain: [],
 				succes: null,
 				eroare: null,
+				incarca: false,
 				private_key: null,
 				public_key: 123
 			},
@@ -370,11 +393,61 @@
 			},
 			methods: {
 				loadBlockChain: function () {
+					this.incarca = true
 					var vm = this
-					axios.get('/chain').then(function (response) {
-						vm.blockchain = response.data
-						console.log(response.data)
-					})
+					axios.get('/chain')
+						.then(function (response) {
+							vm.eroare = null;
+							vm.blockchain = response.data;
+							vm.incarca = false;
+						}).catch(function (error) {
+							vm.eroare = error.data.message;
+							vm.incarca = false;
+						});
+				},
+				loadCarnet: function () {
+					this.incarca = true
+					var vm = this
+					axios.get('/carnet')
+						.then(function (response) {
+							vm.eroare = null;
+							vm.private_key = response.data.private_key;
+							vm.public_key = response.data.public_key;
+							vm.incarca = false
+						}).catch(function (error) {
+							eroare = error.response.data.message
+							vm.private_key = null;
+							vm.public_key = null;
+							vm.incarca = false
+						});
+				},
+				createCarnet: function () {
+					this.incarca = true
+					var vm = this
+					axios.post('/carnet')
+						.then(function (response) {
+							vm.eroare = null;
+							vm.private_key = response.data.private_key;
+							vm.public_key = response.data.public_key;
+							vm.incarca = false;
+						}).catch(function (error) {
+							vm.eroare = error.response.data.message
+							vm.private_key = null;
+							vm.public_key = null;
+							vm.incarca = false;
+						});
+				},
+				mine: function () {
+					this.incarca = true
+					var vm = this
+					axios.post('/mine')
+						.then(function (response) {
+							vm.eroare = null;
+							vm.succes = 'Block minat cu succes';
+						}).catch(function (error) {
+							vm.eroare = error.response.data.message;
+							this.incarca = false;
+						})
 
 				}
 			}
