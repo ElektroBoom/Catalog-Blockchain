@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <head>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -8,13 +10,96 @@
 		Catalog BlockChain
 	</title>
 	<link rel="apple-touch-icon" href="https://i.imgur.com/cUm0ehh.png">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+	<meta name="author" content="Iulian Oancea">
 	<style>
 		body {
 			overflow: scroll;
 		}
 
-		.scroll {
-			overflow: auto;
+		@media only screen and (max-width: 590px),
+		(min-device-width: 600px) and (max-device-width: 860px) {
+
+			table,
+			thead,
+			tbody,
+			th,
+			td,
+			tr {
+				display: block;
+			}
+
+			thead tr {
+				position: absolute;
+				top: -9999px;
+				left: -9999px;
+			}
+
+
+			td {
+				border: none;
+				position: relative;
+				padding-left: 50%;
+				text-align: right
+			}
+
+			td:before {
+				position: absolute;
+				top: 5px;
+				left: 5px;
+				padding-right: 0px;
+				white-space: nowrap;
+			}
+
+			td:nth-of-type(1):before {
+				content: "Tip";
+			}
+			td:nth-of-type(2):before {
+				content: "Materie";
+			}
+			td:nth-of-type(3):before {
+				content: "Descriere";
+			}
+			td:nth-of-type(4):before {
+				content: "Nota";
+			}
+			td:nth-of-type(5):before {
+				content: "An invatamant";
+			}
+			td:nth-of-type(6):before {
+				content: "Data";
+			}
+			td:nth-of-type(7):before {
+				content: "Unitate de invatamant";
+			}
+			td:nth-of-type(8):before {
+				content: "Specializare";
+			}
+			td:nth-of-type(9):before {
+				content: "Comentariu";
+			}
+
+		}
+
+		@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+			body {
+				padding: 0;
+				margin: 0;
+				width: 400px;
+			}
+		}
+
+		@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+			body {
+				width: 495px;
+			}
+		}
+
+		.jumbotron {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
 		}
 	</style>
 </head>
@@ -29,6 +114,11 @@
 		</button>
 		<div class="collapse navbar-collapse justify-content-between" id="collapsibleNavbar">
 			<ul class="nav navbar-nav">
+				<li class="nav-item ">
+					<a class="nav-link" href="#start" data-toggle="pill" id="acasa">
+						<h5>Pagina de start</h5>
+					</a>
+				</li>
 				<li class="nav-item ">
 					<a class="nav-link" href="#mydata" data-toggle="pill">
 						<h5>Datele mele</h5>
@@ -51,7 +141,7 @@
 					<div class="input-group ">
 						<input type="text" class="form-control font-weight-bold" placeholder="ID Persoana">
 						<div class="input-group-append">
-							<span class="input-group-text bg-dark">
+							<span class="input-group-text badge-dark bg-dark">
 								<a href="#search" data-toggle="pill">
 									<img src="https://i.imgur.com/q0hJfxt.png" width="24px">
 								</a>
@@ -71,40 +161,177 @@
 		<div v-if="eroare" class="alert alert-danger container" role="alert">
 			{{eroare}}
 		</div>
+		<div id="start" class="tab-pane fade in" style="margin-top: 100px">
+			<div class="container">
+				<div class="jumbotron ">
+					<h1 class="text-center ">Catalog BlockChain</h1>
+					<h2 class="text-center ">Oancea Iulian</h2>
+					<h2 class="text-center ">ACIEE</h2>
+					<h2 class="text-center ">CTI</h2>
+					<h2 class="text-center ">2018</h2>
+				</div>
+			</div>
+		</div>
 		<div id="mydata" class="tab-pane fade in">
-			<h3>DAtele mele 1</h3>
+			<div class="container">
+				<div class="input-group">
+					<button class="btn btn-dark form-control">
+						Incarca chei
+					</button>
+					<button class="btn btn-dark form-control">
+						Genereaza chei
+					</button>
+				</div>
+				<div class="card card-body">
+					<h2>Cheile mele</h2>
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text badge-dark">Cheie publica:</span>
+						</div>
+						<input type="text" class="form-control" readonly v-model="public_key" id="publica">
+						<div class="input-group-append">
+							<button class="btn btn-dark" onclick="copiaza('publica')">Copy</button>
+						</div>
+					</div>
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text badge-dark">Cheie privata:</span>
+						</div>
+						<input type="text" class="form-control" readonly v-model="private_key" id="privata">
+						<div class="input-group-append">
+							<button class="btn btn-dark" onclick="copiaza('privata')">Copy</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div id="rezultate" class="tab-pane fade in">
 			<div class="container">
-				<h2>Rezultatele mele</h2>
-				<table class="table table-dark table-striped shadow-lg text-center">
-					<thead class="font-weight-bold">
-						<tr>
-							<th>Tip</th>
-							<th>Materie</th>
-							<th>Descriere</th>
-							<th>Nota</th>
-							<th>An invatamant</th>
-							<th>Data</th>
-							<th>Unitate de invatamant</th>
-							<th>Specializare</th>
-							<th>Comentariu</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Nota</td>
-							<td>Mate</td>
-							<td>materie frumoasa</td>
-							<td>10</td>
-							<td>2</td>
-							<td>05/10/2018</td>
-							<td>ACIEE</td>
-							<td>CTI</td>
-							<td>Bravo!</td>
-						</tr>
-					</tbody>
-				</table>
+				<div class="input-group">
+					<button onclick="$('#introducereRezultat').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#rezultateleMele"
+					 id="btnRezultate">
+						Afiseaza rezultat
+					</button>
+					<button onclick="$('#rezultateleMele').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#introducereRezultat">
+						Insereaza rezultat
+					</button>
+				</div>
+
+				<div class="collapse" id="rezultateleMele">
+					<div class="card card-body">
+						<h2>Rezultatele mele</h2>
+						<table class="table table-dark table-striped shadow-lg text-center">
+							<thead class="font-weight-bold">
+								<tr>
+									<th>Tip</th>
+									<th>Materie</th>
+									<th>Descriere</th>
+									<th>Nota</th>
+									<th>An invatamant</th>
+									<th>Data</th>
+									<th>Unitate de invatamant</th>
+									<th>Specializare</th>
+									<th>Comentariu</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Nota</td>
+									<td>Mate</td>
+									<td>materie frumoasa</td>
+									<td>10</td>
+									<td>2</td>
+									<td>05/10/2018</td>
+									<td>ACIEE</td>
+									<td>CTI</td>
+									<td>Bravo!</td>
+								</tr>
+								<tr>
+									<td>Nota</td>
+									<td>Mate</td>
+									<td>materie frumoasa</td>
+									<td>10</td>
+									<td>2</td>
+									<td>05/10/2018</td>
+									<td>ACIEE</td>
+									<td>CTI</td>
+									<td>Bravo!</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="collapse" id="introducereRezultat">
+					<div class="card card-body ">
+						<h2>Introducere Rezultat</h2>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">Materie</span>
+							</div>
+							<input type="text" class="form-control" placeholder="ex: PCLP / Matematica">
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text badge-dark" for="inputGroupSelect01">Tip rezultat</label>
+							</div>
+							<select class="custom-select" id="inputGroupSelect01" onchange="$('#inputGroupSelect01').val()=='Nota'?$('#nota').collapse('show'):$('#nota').collapse('hide');">
+								<option value="Nota">Nota</option>
+								<option value="Absenta">Absenta</option>
+							</select>
+						</div>
+						<div class="input-group mb-3" id="nota">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">Nota</span>
+							</div>
+							<input type="number" step="any" class="form-control" placeholder="de la 1 la 10" min="1" max="10" pattern="^([1-9]\.{0,1}[0-9]{0,2}|10)$">
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">Unitate de invatamant</span>
+							</div>
+							<input type="text" class="form-control" placeholder="ex: ACIEE / UPB">
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">Specializare</span>
+							</div>
+							<input type="text" class="form-control" placeholder="ex: CTI / IS">
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">An invatamant</span>
+							</div>
+							<input type="text" class="form-control" placeholder="ex: 3/ 4">
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">Data</span>
+							</div>
+							<input type="date" class="form-control" placeholder="ex: 2018-01-01">
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">Descriere materie</span>
+							</div>
+							<input type="text" class="form-control">
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">Comentariu</span>
+							</div>
+							<input type="text" class="form-control">
+						</div>
+
+						<div class="input-group">
+							<button class="btn btn-secondary form-control">
+								Adauga
+							</button>
+							<button class="btn btn-secondary form-control">
+								Reseteaza campuri
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -114,7 +341,6 @@
 				<br>
 				<div class="scroll">
 					<pre v-if="blockchain.length > 0">
-
 						{{blockchain}}
 					</pre>
 				</div>
@@ -122,7 +348,9 @@
 		</div>
 
 		<div id="search" class="tab-pane fade in" style="margin-top: 100px">
-			<h3>search 1</h3>
+			<div class="container">
+				<h3>search 1</h3>
+			</div>
 		</div>
 	</div>
 
@@ -132,7 +360,13 @@
 			data: {
 				blockchain: [],
 				succes: null,
-				eroare: null
+				eroare: null,
+				private_key: null,
+				public_key: 123
+			},
+			mounted() {
+				document.getElementById("acasa").click();
+				$("#nota").collapse('show');
 			},
 			methods: {
 				loadBlockChain: function () {
@@ -145,6 +379,10 @@
 				}
 			}
 		})
+		function copiaza(camp) {
+			document.getElementById(camp).select();
+			document.execCommand("copy");
+		}
 	</script>
 </body>
 
