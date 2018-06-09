@@ -115,6 +115,7 @@ def add_rezultat():
                                  info_didactic_data['descriere'],
                                  info_didactic_data['nota'],
                                  info_didactic_data['an_scolar'],
+                                 info_didactic_data['semestru'],
                                  info_didactic_data['data_intamplarii'],
                                  info_didactic_data['unitate_invatamant'],
                                  info_didactic_data['specializare'],
@@ -135,6 +136,30 @@ def add_rezultat():
     else:
         response = {
             'message': 'Adaugarea unei note a esuat'
+        }
+        return jsonify(response), 500
+
+
+@app.route('/medie', methods=['POST'])
+def get_medie():
+    values = request.get_json()
+    id = values['id']
+    unitate_invatamant = values['unitate_invatamant']
+    specializare = values['specializare']
+    anul = values['anul']
+    semestru = values['semestru']
+    materie = values['materie']
+    media = blockchain.get_medie_materie_an(
+        id, unitate_invatamant, specializare, anul, semestru, materie)
+    if media != None:
+        response = {
+            'message': 'Calculul mediei a reusit',
+            'rezultat': media
+        }
+        return jsonify(response), 200
+    else:
+        response = {
+            'message': 'Calculul mediei a esuat'
         }
         return jsonify(response), 500
 

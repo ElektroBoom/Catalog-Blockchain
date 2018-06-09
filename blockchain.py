@@ -76,6 +76,21 @@ class Blockchain:
                     lista_rezultate.append(rez)
         return lista_rezultate
 
+    def get_medie_materie_an(self, id, unitate_invatamant, specializare, anul, semestru, materie):
+        lista_rezultate = []
+        for block in self.chain:
+            print(block)
+            for rez in block.rezultate:
+                print(rez)
+                if rez.receptor == id and rez.info_didactic.unitate_invatamant == unitate_invatamant and rez.info_didactic.specializare == specializare and rez.info_didactic.an_scolar == anul and rez.info_didactic.semestru == semestru and rez.info_didactic.materie == materie and rez.info_didactic.tip_info == 'Nota':
+                    lista_rezultate.append(rez.info_didactic.nota)
+        lista_rezultate = [float(elem) for elem in lista_rezultate]
+        print(lista_rezultate)
+        if len(lista_rezultate) > 0:
+            return sum(lista_rezultate)/float(len(lista_rezultate))
+        else:
+            return None
+
     def proof_of_work(self):
         last_block = self.__chain[-1]
         last_hash = hash_block(last_block)

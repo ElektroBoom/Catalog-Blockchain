@@ -69,15 +69,18 @@
 				content: "An invatamant";
 			}
 			td:nth-of-type(6):before {
-				content: "Data";
+				content: "Semestru";
 			}
 			td:nth-of-type(7):before {
-				content: "Unitate de invatamant";
+				content: "Data";
 			}
 			td:nth-of-type(8):before {
-				content: "Specializare";
+				content: "Unitate de invatamant";
 			}
 			td:nth-of-type(9):before {
+				content: "Specializare";
+			}
+			td:nth-of-type(10):before {
 				content: "Comentariu";
 			}
 
@@ -133,7 +136,7 @@
 			<ul class="nav navbar-nav">
 				<li class="nav-item ">
 					<a class="nav-link" href="#start" data-toggle="pill" id="acasa">
-						<h5>Pagina de start</h5>
+						<h5>Start</h5>
 					</a>
 				</li>
 				<li class="nav-item ">
@@ -146,9 +149,14 @@
 						<h5>Rezultate</h5>
 					</a>
 				</li>
-				<li @click="loadBlockChain" class="nav-item ">
+				<li class="nav-item ">
 					<a class="nav-link" href="#blockchain" data-toggle="pill">
 						<h5>BlockChain</h5>
+					</a>
+				</li>
+				<li class="nav-item ">
+					<a class="nav-link" href="#medii" data-toggle="pill">
+						<h5>Medii</h5>
 					</a>
 				</li>
 				<div class="dropdown-divider"></div>
@@ -229,16 +237,15 @@
 		<div id="rezultate" class="tab-pane fade in">
 			<div class="container">
 				<div class="input-group">
-					<button onclick="$('#introducereRezultat').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#rezultateleMele"
-					 id="btnRezultate">
+					<button onclick="$('#introducereRezultat').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#cautareRezultate">
 						Afiseaza rezultat
 					</button>
-					<button onclick="$('#rezultateleMele').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#introducereRezultat">
+					<button onclick="$('#cautareRezultate').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#introducereRezultat">
 						Insereaza rezultat
 					</button>
 				</div>
 				<br>
-				<div class="collapse" id="rezultateleMele">
+				<div class="collapse" id="cautareRezultate">
 					<div class="card card-body shadow-lg">
 						<form @submit.prevent="getRezultateId">
 							<div class="input-group ">
@@ -259,6 +266,7 @@
 									<th>Descriere</th>
 									<th>Nota</th>
 									<th>An invatamant</th>
+									<th>Semestru</th>
 									<th>Data</th>
 									<th>Unitate de invatamant</th>
 									<th>Specializare</th>
@@ -272,6 +280,7 @@
 									<td>{{rez.rezultat.descriere}}</td>
 									<td>{{rez.rezultat.nota}}</td>
 									<td>{{rez.rezultat.an_scolar}}</td>
+									<td>{{rez.rezultat.semestru}}</td>
 									<td>{{rez.rezultat.data_intamplarii}}</td>
 									<td>{{rez.rezultat.unitate_invatamant}}</td>
 									<td>{{rez.rezultat.specializare}}</td>
@@ -333,6 +342,12 @@
 							</div>
 							<div class="input-group mb-3">
 								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Semestru</span>
+								</div>
+								<input type="text" v-model="rezultat.semestru" class="form-control" placeholder="1/2" required>
+							</div>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
 									<span class="input-group-text badge-dark">Data</span>
 								</div>
 								<input type="date" v-model="rezultat.data_intamplarii" class="form-control" placeholder="ex: 2018-01-01">
@@ -383,160 +398,181 @@
 				</div>
 			</div>
 		</div>
-
-		<div id="search" class="tab-pane fade in" style="margin-top: 100px">
+		<div id="medii" class="tab-pane fade in">
 			<div class="container">
-				<h3>search 1</h3>
+				<div class="input-group">
+					<button onclick="$('#medieAnuala').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#medieSemestriala">
+						Semestriala
+					</button>
+					<button onclick="$('#medieSemestriala').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#medieAnuala">
+						Anuala
+					</button>
+				</div>
+				<br>
+				<div class="collapse" id="medieSemestriala">
+					<div class="card card-body shadow-lg">
+						semestrial
+					</div>
+				</div>
+				<div class="collapse" id="medieAnuala">
+					<div class="card card-body shadow-lg">
+						anual
+					</div>
+				</div>
+			</div>
+			<div id="search" class="tab-pane fade in" style="margin-top: 100px">
+				<div class="container">
+					<h3>search 1</h3>
+				</div>
 			</div>
 		</div>
-	</div>
-
-	<script>
-		var vm = new Vue({
-			el: '#app',
-			data: {
-				blockchain: [],
-				rezultate: [],
-				succes: null,
-				eroare: null,
-				incarca: false,
-				private_key: null,
-				public_key: null,
-				cheieRezultate: null,
-				rezultat: {
-					receptor: '',
-					info_didactic: {
-						tip_info: '',
-						materie: '',
-						descriere: '',
-						an_scolar: '',
-						nota: null,
-						data_intamplarii: '',
-						unitate_invatamant: '',
-						specializare: '',
-						comentariu: ''
-					}
-				},
-				rezultatSubmitDisabled: false
-			},
-			mounted() {
-				$("#acasa").click();
-				$("#btnReset").click()
-				$("#nota").collapse('show');
-			},
-			methods: {
-				loadBlockChain: function () {
-					this.incarca = true
-					var vm = this
-					axios.get('/chain')
-						.then(function (response) {
-							vm.eroare = null;
-							vm.blockchain = response.data;
-							vm.incarca = false;
-						}).catch(function (error) {
-							vm.eroare = error.data.message;
-							vm.incarca = false;
-						});
-				},
-				loadCarnet: function () {
-					this.incarca = true
-					var vm = this
-					axios.get('/carnet')
-						.then(function (response) {
-							vm.eroare = null;
-							vm.private_key = response.data.private_key;
-							vm.public_key = response.data.public_key;
-							vm.incarca = false
-						}).catch(function (error) {
-							eroare = error.response.data.message
-							vm.private_key = null;
-							vm.public_key = null;
-							vm.incarca = false
-						});
-				},
-				createCarnet: function () {
-					this.incarca = true
-					var vm = this
-					axios.post('/carnet')
-						.then(function (response) {
-							vm.eroare = null;
-							vm.private_key = response.data.private_key;
-							vm.public_key = response.data.public_key;
-							vm.incarca = false;
-						}).catch(function (error) {
-							vm.eroare = error.response.data.message
-							vm.private_key = null;
-							vm.public_key = null;
-							vm.incarca = false;
-						});
-				},
-				mine: function () {
-					this.incarca = true
-					var vm = this
-					axios.post('/mine')
-						.then(function (response) {
-							vm.eroare = null;
-							vm.succes = 'Block minat cu succes';
-							vm.incarca = false
-						}).catch(function (error) {
-							vm.eroare = error.response.data.message;
-							vm.incarca = false;
-						})
-				},
-				addRezultat: function () {
-					this.incarca = true
-					var vm = this
-					axios.post('/rezultat', {
-						receptor: vm.rezultat.receptor,
+		<script>
+			var vm = new Vue({
+				el: '#app',
+				data: {
+					blockchain: [],
+					rezultate: [],
+					succes: null,
+					eroare: null,
+					incarca: false,
+					private_key: null,
+					public_key: null,
+					cheieRezultate: null,
+					rezultat: {
+						receptor: '',
 						info_didactic: {
-							tip_info: vm.rezultat.tip_info,
-							materie: vm.rezultat.materie,
-							descriere: vm.rezultat.descriere,
-							nota: vm.rezultat.nota,
-							an_scolar: vm.rezultat.an_scolar,
-							data_intamplarii: vm.rezultat.data_intamplarii,
-							unitate_invatamant: vm.rezultat.unitate_invatamant,
-							specializare: vm.rezultat.specializare,
-							comentariu: vm.rezultat.comentariu
+							tip_info: '',
+							materie: '',
+							descriere: '',
+							an_scolar: '',
+							nota: null,
+							semestru: null,
+							data_intamplarii: '',
+							unitate_invatamant: '',
+							specializare: '',
+							comentariu: ''
 						}
-					})
-						.then(function (response) {
+					},
+					rezultatSubmitDisabled: false
+				},
+				mounted() {
+					$("#acasa").click();
+					$("#btnReset").click()
+					$("#nota").collapse('show');
+				},
+				methods: {
+					loadBlockChain: function () {
+						this.incarca = true
+						var vm = this
+						axios.get('/chain')
+							.then(function (response) {
+								vm.eroare = null;
+								vm.blockchain = response.data;
+								vm.incarca = false;
+							}).catch(function (error) {
+								vm.eroare = error.data.message;
+								vm.incarca = false;
+							});
+					},
+					loadCarnet: function () {
+						this.incarca = true
+						var vm = this
+						axios.get('/carnet')
+							.then(function (response) {
+								vm.eroare = null;
+								vm.private_key = response.data.private_key;
+								vm.public_key = response.data.public_key;
+								vm.incarca = false
+							}).catch(function (error) {
+								eroare = error.response.data.message
+								vm.private_key = null;
+								vm.public_key = null;
+								vm.incarca = false
+							});
+					},
+					createCarnet: function () {
+						this.incarca = true
+						var vm = this
+						axios.post('/carnet')
+							.then(function (response) {
+								vm.eroare = null;
+								vm.private_key = response.data.private_key;
+								vm.public_key = response.data.public_key;
+								vm.incarca = false;
+							}).catch(function (error) {
+								vm.eroare = error.response.data.message
+								vm.private_key = null;
+								vm.public_key = null;
+								vm.incarca = false;
+							});
+					},
+					mine: function () {
+						this.incarca = true
+						var vm = this
+						axios.post('/mine')
+							.then(function (response) {
+								vm.eroare = null;
+								vm.succes = 'Block minat cu succes';
+								vm.incarca = false
+							}).catch(function (error) {
+								vm.eroare = error.response.data.message;
+								vm.incarca = false;
+							})
+					},
+					addRezultat: function () {
+						this.incarca = true
+						var vm = this
+						axios.post('/rezultat', {
+							receptor: vm.rezultat.receptor,
+							info_didactic: {
+								tip_info: vm.rezultat.tip_info,
+								materie: vm.rezultat.materie,
+								descriere: vm.rezultat.descriere,
+								nota: vm.rezultat.nota,
+								an_scolar: vm.rezultat.an_scolar,
+								semestru: vm.rezultat.semestru,
+								data_intamplarii: vm.rezultat.data_intamplarii,
+								unitate_invatamant: vm.rezultat.unitate_invatamant,
+								specializare: vm.rezultat.specializare,
+								comentariu: vm.rezultat.comentariu
+							}
+						})
+							.then(function (response) {
+								vm.eroare = null;
+								vm.succes = response.data.message;
+								vm.incarca = false;
+							}).catch(function (error) {
+								vm.success = null;
+								vm.eroare = error.response.data.message;
+								vm.incarca = false;
+							})
+					},
+					getRezultateId: function () {
+						this.incarca = true
+						var vm = this
+						axios.post('/rezultat_id', {
+							id: vm.cheieRezultate
+						}).then(function (response) {
 							vm.eroare = null;
-							vm.succes = response.data.message;
+							vm.rezultate = response.data.rezultate
+							console.log(response.data)
 							vm.incarca = false;
 						}).catch(function (error) {
 							vm.success = null;
 							vm.eroare = error.response.data.message;
 							vm.incarca = false;
 						})
-				},
-				getRezultateId: function () {
-					this.incarca = true
-					var vm = this
-					axios.post('/rezultat_id', {
-						id: vm.cheieRezultate
-					}).then(function (response) {
-						vm.eroare = null;
-						vm.succes = response.data.message;
-						vm.rezultate = response.data.rezultate
-						console.log(response.data)
-						vm.incarca = false;
-					}).catch(function (error) {
-						vm.success = null;
-						vm.eroare = error.response.data.message;
-						vm.incarca = false;
-					})
+					}
 				}
+			})
+			function copiaza(camp) {
+				document.getElementById(camp).select();
+				document.execCommand("copy");
 			}
-		})
-		function copiaza(camp) {
-			document.getElementById(camp).select();
-			document.execCommand("copy");
-		}
-		$('.navbar-nav>li>a').on('click', function () {
-			$('.navbar-collapse').collapse('hide');
-		});
-	</script>
+			$('.navbar-nav>li>a').on('click', function () {
+				$('.navbar-collapse').collapse('hide');
+			});
+		</script>
 </body>
 
 </html>
