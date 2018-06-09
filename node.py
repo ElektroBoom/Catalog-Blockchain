@@ -131,7 +131,7 @@ def add_rezultat():
                 'semnatura': semnatura
             }
         }
-        return jsonify(response), 500
+        return jsonify(response), 200
     else:
         response = {
             'message': 'Adaugarea unei note a esuat'
@@ -157,7 +157,7 @@ def get_rezultate_pentru_id():
 
     else:
         response = {
-            'message': 'Retunartea rezultatelor a esuat',
+            'message': 'Returnarea rezultatelor a esuat',
             'carnet_set_up': carnet.public_key != None
         }
         return jsonify(response), 500

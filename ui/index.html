@@ -2,6 +2,7 @@
 
 <head>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css">
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -97,10 +98,7 @@
 		}
 
 		.jumbotron {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
+			background: rgba(255, 255, 255, 0);
 		}
 
 		.loader {
@@ -177,15 +175,15 @@
 		<div v-if="incarca" class="loader container"></div>
 		<br>
 
-		<div v-if="succes" class="alert alert-success container" role="alert">
+		<div v-if="succes" id="alertaSucces" class="alert alert-success container" role="alert">
 			{{succes}}
 		</div>
-		<div v-if="eroare" class="alert alert-danger container" role="alert">
+		<div v-if="eroare" id="eroare" class="alert alert-danger container" role="alert">
 			{{eroare}}
 		</div>
 		<div id="start" class="tab-pane fade in" style="margin-top: 100px">
 			<div class="container">
-				<div class="jumbotron ">
+				<div class="jumbotron  animated bounceInDown">
 					<h1 class="text-center ">Catalog BlockChain</h1>
 					<h2 class="text-center ">Oancea Iulian</h2>
 					<h2 class="text-center ">ACIEE</h2>
@@ -204,7 +202,8 @@
 						Genereaza chei
 					</button>
 				</div>
-				<div class="card card-body">
+				<br>
+				<div class="card card-body shadow-lg">
 					<h2>Cheile mele</h2>
 					<div class="input-group mb-3">
 						<div class="input-group-prepend">
@@ -238,11 +237,21 @@
 						Insereaza rezultat
 					</button>
 				</div>
-
+				<br>
 				<div class="collapse" id="rezultateleMele">
-					<div class="card card-body">
-						<h2>Rezultatele mele</h2>
-						<table class="table table-dark table-striped shadow-lg text-center">
+					<div class="card card-body shadow-lg">
+						<form @submit.prevent="getRezultateId">
+							<div class="input-group ">
+								<input type="text" v-model="cheieRezultate" class="form-control font-weight-bold" placeholder="Cheie publica">
+								<div class="input-group-append">
+									<button type="submit" class="btn btn-dark">
+										<img src="https://i.imgur.com/q0hJfxt.png" width="24px">
+									</button>
+								</div>
+							</div>
+						</form>
+						<h2 v-if="rezultate.length > 0">Rezultate</h2>
+						<table v-if="rezultate.length > 0" class="table table-dark table-striped shadow-lg text-center">
 							<thead class="font-weight-bold">
 								<tr>
 									<th>Tip</th>
@@ -257,114 +266,120 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
-									<td>Nota</td>
-									<td>Mate</td>
-									<td>materie frumoasa</td>
-									<td>10</td>
-									<td>2</td>
-									<td>05/10/2018</td>
-									<td>ACIEE</td>
-									<td>CTI</td>
-									<td>Bravo!</td>
-								</tr>
-								<tr>
-									<td>Nota</td>
-									<td>Mate</td>
-									<td>materie frumoasa</td>
-									<td>10</td>
-									<td>2</td>
-									<td>05/10/2018</td>
-									<td>ACIEE</td>
-									<td>CTI</td>
-									<td>Bravo!</td>
+								<tr v-for="rez in rezultate">
+									<td>{{rez.rezultat.tip_info}}</td>
+									<td>{{rez.rezultat.materie}}</td>
+									<td>{{rez.rezultat.descriere}}</td>
+									<td>{{rez.rezultat.nota}}</td>
+									<td>{{rez.rezultat.an_scolar}}</td>
+									<td>{{rez.rezultat.data_intamplarii}}</td>
+									<td>{{rez.rezultat.unitate_invatamant}}</td>
+									<td>{{rez.rezultat.specializare}}</td>
+									<td>{{rez.rezultat.comentariu}}</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
 				<div class="collapse" id="introducereRezultat">
-					<div class="card card-body ">
+					<div class="card card-body shadow-lg">
 						<h2>Introducere Rezultat</h2>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">Materie</span>
+						<form @submit.prevent="addRezultat">
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Receptor</span>
+								</div>
+								<input type="text" class="form-control" v-model="rezultat.receptor" placeholder="cheia publica a student-ului" required>
 							</div>
-							<input type="text" class="form-control" placeholder="ex: PCLP / Matematica">
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<label class="input-group-text badge-dark" for="inputGroupSelect01">Tip rezultat</label>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Materie</span>
+								</div>
+								<input type="text" class="form-control" v-model="rezultat.materie" placeholder="ex: PCLP / Matematica" required>
 							</div>
-							<select class="custom-select" id="inputGroupSelect01" onchange="$('#inputGroupSelect01').val()=='Nota'?$('#nota').collapse('show'):$('#nota').collapse('hide');">
-								<option value="Nota">Nota</option>
-								<option value="Absenta">Absenta</option>
-							</select>
-						</div>
-						<div class="input-group mb-3" id="nota">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">Nota</span>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<label class="input-group-text badge-dark" for="inputGroupSelect01">Tip rezultat</label>
+								</div>
+								<select class="custom-select" v-model="rezultat.tip_info" id="inputGroupSelect01" onchange="$('#inputGroupSelect01').val()=='Nota'?$('#nota').collapse('show'):$('#nota').collapse('hide');">
+									<option value="Nota">Nota</option>
+									<option value="Absenta">Absenta</option>
+								</select>
 							</div>
-							<input type="number" step="any" class="form-control" placeholder="de la 1 la 10" min="1" max="10" pattern="^([1-9]\.{0,1}[0-9]{0,2}|10)$">
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">Unitate de invatamant</span>
+							<div class="input-group mb-3" id="nota">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Nota</span>
+								</div>
+								<input type="number" step="any" v-model="rezultat.nota" class="form-control" placeholder="de la 1 la 10" min="1" max="10"
+								 pattern="^([1-9]\.{0,1}[0-9]{0,2}|10)$">
 							</div>
-							<input type="text" class="form-control" placeholder="ex: ACIEE / UPB">
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">Specializare</span>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Unitate de invatamant</span>
+								</div>
+								<input type="text" v-model="rezultat.unitate_invatamant" class="form-control" placeholder="ex: ACIEE / UPB" required>
 							</div>
-							<input type="text" class="form-control" placeholder="ex: CTI / IS">
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">An invatamant</span>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Specializare</span>
+								</div>
+								<input type="text" v-model="rezultat.specializare" class="form-control" placeholder="ex: CTI / IS" required>
 							</div>
-							<input type="text" class="form-control" placeholder="ex: 3/ 4">
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">Data</span>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">An invatamant</span>
+								</div>
+								<input type="text" v-model="rezultat.an_scolar" class="form-control" placeholder="ex: 3/ 4" required>
 							</div>
-							<input type="date" class="form-control" placeholder="ex: 2018-01-01">
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">Descriere materie</span>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Data</span>
+								</div>
+								<input type="date" v-model="rezultat.data_intamplarii" class="form-control" placeholder="ex: 2018-01-01">
 							</div>
-							<input type="text" class="form-control">
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">Comentariu</span>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Descriere materie</span>
+								</div>
+								<input type="text" v-model="rezultat.descriere" class="form-control">
 							</div>
-							<input type="text" class="form-control">
-						</div>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Comentariu</span>
+								</div>
+								<input type="text" v-model="rezultat.comentariu" class="form-control">
+							</div>
 
-						<div class="input-group">
-							<button class="btn btn-secondary form-control">
-								Adauga
-							</button>
-							<button class="btn btn-secondary form-control">
-								Reseteaza campuri
-							</button>
-						</div>
+							<div class="input-group">
+								<button type="submit" :disabled="rezultatSubmitDisabled" class="btn btn-secondary form-control">
+									Adauga
+								</button>
+								<button class="btn btn-secondary form-control" type="reset" id="btnReset">
+									Reseteaza campuri
+								</button>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
 		</div>
-
-		<div id="blockchain" class="tab-pane fade in" style="margin-top: 100px">
+		<div id="blockchain" class="tab-pane fade in">
 			<div class="container">
-				<button @click="loadBlockChain" class="btn btn-dark">Date blockchain</button>
+				<div class="input-group">
+					<button @click="loadBlockChain" class="btn btn-dark form-control">
+						Afiseaza blockchain
+					</button>
+					<button @click="mine" class="btn btn-dark form-control">
+						Mineaza block
+					</button>
+				</div>
 				<br>
-				<div class="scroll">
-					<pre v-if="blockchain.length > 0">
-						{{blockchain}}
-					</pre>
+				<div class="scroll ">
+					<div v-if="blockchain.length > 0" class="card card-body shadow-lg">
+						<pre>
+							{{blockchain}}
+						</pre>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -381,14 +396,32 @@
 			el: '#app',
 			data: {
 				blockchain: [],
+				rezultate: [],
 				succes: null,
 				eroare: null,
 				incarca: false,
 				private_key: null,
-				public_key: 123
+				public_key: null,
+				cheieRezultate: null,
+				rezultat: {
+					receptor: '',
+					info_didactic: {
+						tip_info: '',
+						materie: '',
+						descriere: '',
+						an_scolar: '',
+						nota: null,
+						data_intamplarii: '',
+						unitate_invatamant: '',
+						specializare: '',
+						comentariu: ''
+					}
+				},
+				rezultatSubmitDisabled: false
 			},
 			mounted() {
-				document.getElementById("acasa").click();
+				$("#acasa").click();
+				$("#btnReset").click()
 				$("#nota").collapse('show');
 			},
 			methods: {
@@ -444,11 +477,55 @@
 						.then(function (response) {
 							vm.eroare = null;
 							vm.succes = 'Block minat cu succes';
+							vm.incarca = false
 						}).catch(function (error) {
 							vm.eroare = error.response.data.message;
-							this.incarca = false;
+							vm.incarca = false;
 						})
-
+				},
+				addRezultat: function () {
+					this.incarca = true
+					var vm = this
+					axios.post('/rezultat', {
+						receptor: vm.rezultat.receptor,
+						info_didactic: {
+							tip_info: vm.rezultat.tip_info,
+							materie: vm.rezultat.materie,
+							descriere: vm.rezultat.descriere,
+							nota: vm.rezultat.nota,
+							an_scolar: vm.rezultat.an_scolar,
+							data_intamplarii: vm.rezultat.data_intamplarii,
+							unitate_invatamant: vm.rezultat.unitate_invatamant,
+							specializare: vm.rezultat.specializare,
+							comentariu: vm.rezultat.comentariu
+						}
+					})
+						.then(function (response) {
+							vm.eroare = null;
+							vm.succes = response.data.message;
+							vm.incarca = false;
+						}).catch(function (error) {
+							vm.success = null;
+							vm.eroare = error.response.data.message;
+							vm.incarca = false;
+						})
+				},
+				getRezultateId: function () {
+					this.incarca = true
+					var vm = this
+					axios.post('/rezultat_id', {
+						id: vm.cheieRezultate
+					}).then(function (response) {
+						vm.eroare = null;
+						vm.succes = response.data.message;
+						vm.rezultate = response.data.rezultate
+						console.log(response.data)
+						vm.incarca = false;
+					}).catch(function (error) {
+						vm.success = null;
+						vm.eroare = error.response.data.message;
+						vm.incarca = false;
+					})
 				}
 			}
 		})
