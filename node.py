@@ -169,6 +169,29 @@ def get_medie_semestriala():
         return jsonify(response), 500
 
 
+@app.route('/medie_anuala', methods=['POST'])
+def get_medie_anuala():
+    values = request.get_json()
+    receptor = values['receptor']
+    tip_unitate = values['tip_unitate']
+    unitate_invatamant = values['unitate_invatamant']
+    specializare = values['specializare']
+    anul = values['anul']
+    medie = blockchain.get_medie_anuala(
+        receptor, tip_unitate, unitate_invatamant, specializare, anul)
+    if medie != None:
+        response = {
+            'message': 'Calculul mediei a reusit',
+            'rezultat': medie
+        }
+        return jsonify(response), 200
+    else:
+        response = {
+            'message': 'Calculul mediei a esuat. Nu am toate datele sau date valide'
+        }
+        return jsonify(response), 500
+
+
 @app.route('/date_personale', methods=['POST'])
 def addDatePersonale():
     values = request.get_json()

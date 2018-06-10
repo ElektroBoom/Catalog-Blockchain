@@ -524,7 +524,49 @@
 				</div>
 				<div class="collapse" id="medieAnuala">
 					<div class="card card-body shadow-lg">
-						anual
+						<form @submit.prevent="getMedieAnuala">
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Receptor</span>
+								</div>
+								<input type="text" class="form-control" v-model="dateMedieAnuala.receptor" placeholder="cheia publica a studentului" required>
+							</div>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<label class="input-group-text badge-dark" for="tipUnitate">Tip unitate</label>
+								</div>
+								<select class="custom-select" v-model="dateMedieAnuala.tip_unitate">
+									<option value="universitate" selected>Facultate</option>
+									<option value="scoalaSauLiceu">Liceu / Scoala</option>
+								</select>
+							</div>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Unitate de invatamant</span>
+								</div>
+								<input type="text" v-model="dateMedieAnuala.unitate_invatamant" class="form-control" placeholder="ex: ACIEE / UPB" required>
+							</div>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Specializare</span>
+								</div>
+								<input type="text" v-model="dateMedieAnuala.specializare" class="form-control" placeholder="ex: CTI / IS" required>
+							</div>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">An invatamant</span>
+								</div>
+								<input type="text" v-model="dateMedieAnuala.anul" class="form-control" placeholder="ex: 3/ 4" required>
+							</div>
+							<div class="input-group">
+								<button type="submit" class="btn btn-secondary form-control">
+									Trimite
+								</button>
+								<button class="btn btn-secondary form-control" type="reset" id="btnReset">
+									Reseteaza campuri
+								</button>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -573,6 +615,13 @@
 					anul: '',
 					semestru: '',
 					materie: ''
+				},
+				dateMedieAnuala: {
+					receptor: '',
+					tip_unitate: '',
+					unitate_invatamant: '',
+					specializare: '',
+					anul: ''
 				}
 			},
 			mounted() {
@@ -654,16 +703,16 @@
 						info_didactic: {
 							tip_info: vm.rezultat.tip_info,
 							materie: vm.rezultat.materie,
-							descriere: vm.rezultat.descriere,
+							descriere: vm.rezultat.descriere != null ? vm.rezultat.descriere : '',
 							nota: vm.rezultat.nota,
-							credite: vm.rezultat.credite,
+							credite: vm.rezultat.tip_unitate == 'universitate' ? vm.rezultat.credite : 1,
 							an_scolar: vm.rezultat.an_scolar,
 							semestru: vm.rezultat.semestru,
 							data_intamplarii: vm.rezultat.data_intamplarii,
 							tip_unitate: vm.rezultat.tip_unitate,
 							unitate_invatamant: vm.rezultat.unitate_invatamant,
 							specializare: vm.rezultat.specializare,
-							comentariu: vm.rezultat.comentariu
+							comentariu: vm.rezultat.comentariu != null ? vm.rezultat.comentariu : ''
 						}
 					})
 						.then(function (response) {
@@ -703,6 +752,26 @@
 						anul: vm.dateMedieSemestriala.anul,
 						semestru: vm.dateMedieSemestriala.semestru,
 						materie: vm.dateMedieSemestriala.materie
+					})
+						.then(function (response) {
+							vm.eroare = null;
+							vm.succes = 'Aveti media ' + response.data.rezultat.toFixed(2);
+							vm.incarca = false;
+						}).catch(function (error) {
+							vm.succes = null;
+							vm.eroare = error.response.data.message;
+							vm.incarca = false;
+						})
+				},
+				getMedieAnuala: function () {
+					this.incarca = true;
+					var vm = this;
+					axios.post('/medie_anuala', {
+						receptor: vm.dateMedieAnuala.receptor,
+						tip_unitate: vm.dateMedieAnuala.tip_unitate,
+						unitate_invatamant: vm.dateMedieAnuala.unitate_invatamant,
+						specializare: vm.dateMedieAnuala.specializare,
+						anul: vm.dateMedieAnuala.anul,
 					})
 						.then(function (response) {
 							vm.eroare = null;

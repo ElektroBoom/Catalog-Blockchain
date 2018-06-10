@@ -85,17 +85,36 @@ class Blockchain:
             for rez in block.rezultate:
                 if rez.receptor == receptor and rez.emitator == emitator and rez.info_didactic.tip_unitate == tip_unitate and rez.info_didactic.unitate_invatamant == unitate_invatamant and rez.info_didactic.specializare == specializare and rez.info_didactic.an_scolar == anul and rez.info_didactic.semestru == semestru and rez.info_didactic.materie == materie and rez.info_didactic.tip_info == 'Nota':
                     lista_rezultate.append(
-                        float(rez.info_didactic.nota) * float(rez.info_didactic.credite))
-                    lista_credite.append(float(rez.info_didactic.credite))
+                        float(rez.info_didactic.nota) * (float(rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1))
+
+                    lista_credite.append(
+                        float(rez.info_didactic.credite)
+                        if rez.info_didactic.tip_unitate == 'univeristate'
+                        else 1)
         lista_rezultate = [float(elem) for elem in lista_rezultate]
-        print(lista_rezultate)
         if len(lista_credite) > 0:
             return sum(lista_rezultate)/sum(lista_credite)
         else:
             return None
 
-    def get_medie_anuala(self, emitator, receptor, tip_unitate, unitate_invatamant, specializare, anul):
-        pass
+    def get_medie_anuala(self, receptor, tip_unitate, unitate_invatamant, specializare, anul):
+        lista_rezultate = []
+        lista_credite = []
+        for block in self.chain:
+            for rez in block.rezultate:
+                if rez.receptor == receptor and rez.info_didactic.tip_unitate == tip_unitate and rez.info_didactic.unitate_invatamant == unitate_invatamant and rez.info_didactic.specializare == specializare and rez.info_didactic.an_scolar == anul and rez.info_didactic.tip_info == 'Nota':
+                    lista_rezultate.append(
+                        float(rez.info_didactic.nota) * (float(rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1))
+
+                    lista_credite.append(
+                        float(rez.info_didactic.credite)
+                        if rez.info_didactic.tip_unitate == 'univeristate'
+                        else 1)
+        lista_rezultate = [float(elem) for elem in lista_rezultate]
+        if len(lista_credite) > 0:
+            return sum(lista_rezultate)/sum(lista_credite)
+        else:
+            return None
 
     def proof_of_work(self):
         last_block = self.__chain[-1]
