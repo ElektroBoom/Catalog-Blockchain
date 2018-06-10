@@ -37,10 +37,13 @@ class Blockchain:
                 print(utilizator)
                 if not val.cnp == utilizator.cnp:
                     self.utilizatori.append(val)
+                    return True
                 else:
                     print('CNP-ul exista deja!')
+                    return False
         else:
             self.utilizatori.append(val)
+            return True
 
     def get_date_de_introdus(self):
         return self.__date_de_introdus[:]

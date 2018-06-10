@@ -4,6 +4,7 @@ from flask_cors import CORS
 from carnet import Carnet
 from blockchain import Blockchain
 from info_didactic import InfoDidactic
+from utilizator import Utilizator
 from json import loads
 
 app = Flask(__name__)
@@ -164,6 +165,30 @@ def get_medie_semestriala():
     else:
         response = {
             'message': 'Calculul mediei a esuat. Nu am toate datele sau date valide'
+        }
+        return jsonify(response), 500
+
+
+@app.route('/date_personale', methods=['POST'])
+def addDatePersonale():
+    values = request.get_json()
+    if not values:
+        response = {
+            'message': 'Nu am gasit date'
+        }
+        return jsonify(response), 400
+    id = values['id']
+    nume = values['nume']
+    prenume = values['prenume']
+    cnp = values['cnp']
+    if blockchain.add_utilizatori(Utilizator(id, nume, prenume, cnp)):
+        response = {
+            'message': 'Adaugat cu succes'
+        }
+        return jsonify(response), 200
+    else:
+        response = {
+            'message': 'CNP-ul este inregistrat pentru altcineva'
         }
         return jsonify(response), 500
 
