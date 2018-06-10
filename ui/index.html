@@ -140,8 +140,8 @@
 					</a>
 				</li>
 				<li class="nav-item ">
-					<a class="nav-link" href="#mydata" data-toggle="pill">
-						<h5>Chei</h5>
+					<a class="nav-link" href="#myData" data-toggle="pill">
+						<h5>Personal</h5>
 					</a>
 				</li>
 				<li class="nav-item ">
@@ -191,7 +191,10 @@
 		</div>
 		<div id="start" class="tab-pane fade in" style="margin-top: 100px">
 			<div class="container">
-				<div class="jumbotron  animated bounceInDown">
+				<div class="alert alert-info text-center animated bounceInRight" role="alert">
+					Genereaza sau incarca o cheie si completeaza datele personale
+				</div>
+				<div class="jumbotron animated bounceInLeft">
 					<h1 class="text-center ">Catalog BlockChain</h1>
 					<h2 class="text-center ">Oancea Iulian</h2>
 					<h2 class="text-center ">ACIEE</h2>
@@ -200,7 +203,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="mydata" class="tab-pane fade in">
+		<div id="myData" class="tab-pane fade in  animated bounceInDown">
 			<div class="container">
 				<div class="input-group">
 					<button @click="loadCarnet" class="btn btn-dark form-control">
@@ -231,10 +234,39 @@
 							<button class="btn btn-dark" onclick="copiaza('privata')">Copy</button>
 						</div>
 					</div>
+					<h2 v-if="trebuieInregistrat"> Date Personale</h2>
+					<form v-if="trebuieInregistrat" @submit.prevent="addDatePersonale">
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">Nume</span>
+							</div>
+							<input type="text" class="form-control" v-model="datePersonale.nume" required>
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">Prenume</span>
+							</div>
+							<input type="text" class="form-control" v-model="datePersonale.prenume" required>
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text badge-dark">CNP</span>
+							</div>
+							<input type="text" class="form-control" v-model="datePersonale.cnp" required>
+						</div>
+						<div class="input-group">
+							<button type="submit" class="btn btn-secondary form-control">
+								Trimite
+							</button>
+							<button class="btn btn-secondary form-control" type="reset" id="btnReset">
+								Reseteaza campuri
+							</button>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
-		<div id="rezultate" class="tab-pane fade in">
+		<div id="rezultate" class="tab-pane fade in animated bounceInDown">
 			<div class="container">
 				<div class="input-group">
 					<button onclick="$('#introducereRezultat').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#cautareRezultate">
@@ -392,7 +424,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="blockchain" class="tab-pane fade in">
+		<div id="blockchain" class="tab-pane fade in animated bounceInDown">
 			<div class="container">
 				<div class="input-group">
 					<button @click="loadBlockChain" class="btn btn-dark form-control">
@@ -403,7 +435,7 @@
 					</button>
 				</div>
 				<br>
-				<div class="scroll ">
+				<div class="scroll">
 					<div v-if="blockchain.length > 0" class="card card-body shadow-lg">
 						<pre>
 							{{blockchain}}
@@ -412,7 +444,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="medii" class="tab-pane fade in">
+		<div id="medii" class="tab-pane fade in animated bounceInDown">
 			<div class="container">
 				<div class="input-group">
 					<button onclick="$('#medieAnuala').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#medieSemestriala">
@@ -437,7 +469,7 @@
 								<div class="input-group-prepend">
 									<span class="input-group-text badge-dark">Receptor</span>
 								</div>
-								<input type="text" class="form-control" v-model="dateMedieSemestriala.receptor" placeholder="cheia publica a student-ului"
+								<input type="text" class="form-control" v-model="dateMedieSemestriala.receptor" placeholder="cheia publica a studentului"
 								 required>
 							</div>
 							<div class="input-group mb-3">
@@ -496,11 +528,6 @@
 					</div>
 				</div>
 			</div>
-			<div id="search" class="tab-pane fade in" style="margin-top: 100px">
-				<div class="container">
-					<h3>search 1</h3>
-				</div>
-			</div>
 		</div>
 	</div>
 	<script>
@@ -512,9 +539,15 @@
 				succes: null,
 				eroare: null,
 				incarca: false,
+				trebuieInregistrat: false,
 				private_key: null,
 				public_key: null,
 				cheieRezultate: null,
+				datePersonale: {
+					nume: '',
+					prenume: '',
+					cnp: ''
+				},
 				rezultat: {
 					receptor: '',
 					info_didactic: {
@@ -567,11 +600,15 @@
 					var vm = this
 					axios.get('/carnet')
 						.then(function (response) {
+							vm.succes = null
 							vm.eroare = null;
 							vm.private_key = response.data.private_key;
 							vm.public_key = response.data.public_key;
+							vm.trebuieInregistrat = false;
 							vm.incarca = false
 						}).catch(function (error) {
+							vm.trebuieInregistrat = false;
+							vm.succes = null
 							eroare = error.response.data.message
 							vm.private_key = null;
 							vm.public_key = null;
@@ -579,37 +616,39 @@
 						});
 				},
 				createCarnet: function () {
-					this.incarca = true
-					var vm = this
+					this.incarca = true;
+					var vm = this;
 					axios.post('/carnet')
 						.then(function (response) {
 							vm.eroare = null;
 							vm.private_key = response.data.private_key;
 							vm.public_key = response.data.public_key;
+							vm.trebuieInregistrat = true;
 							vm.incarca = false;
 						}).catch(function (error) {
 							vm.eroare = error.response.data.message
+							vm.trebuieInregistrat = false;
 							vm.private_key = null;
 							vm.public_key = null;
 							vm.incarca = false;
 						});
 				},
 				mine: function () {
-					this.incarca = true
-					var vm = this
+					this.incarca = true;
+					var vm = this;
 					axios.post('/mine')
 						.then(function (response) {
 							vm.eroare = null;
 							vm.succes = 'Block minat cu succes';
-							vm.incarca = false
+							vm.incarca = false;
 						}).catch(function (error) {
 							vm.eroare = error.response.data.message;
 							vm.incarca = false;
 						})
 				},
 				addRezultat: function () {
-					this.incarca = true
-					var vm = this
+					this.incarca = true;
+					var vm = this;
 					axios.post('/rezultat', {
 						receptor: vm.rezultat.receptor,
 						info_didactic: {
@@ -638,14 +677,13 @@
 						})
 				},
 				getRezultateId: function () {
-					this.incarca = true
-					var vm = this
+					this.incarca = true;
+					var vm = this;
 					axios.post('/rezultat_id', {
 						id: vm.cheieRezultate
 					}).then(function (response) {
 						vm.eroare = null;
-						vm.rezultate = response.data.rezultate
-						console.log(response.data)
+						vm.rezultate = response.data.rezultate;
 						vm.incarca = false;
 					}).catch(function (error) {
 						vm.success = null;
@@ -654,8 +692,8 @@
 					})
 				},
 				getmedieSemestriala: function () {
-					this.incarca = true
-					var vm = this
+					this.incarca = true;
+					var vm = this;
 					axios.post('/medie_semestriala', {
 						emitator: vm.dateMedieSemestriala.emitator,
 						receptor: vm.dateMedieSemestriala.receptor,
@@ -672,6 +710,24 @@
 							vm.incarca = false;
 						}).catch(function (error) {
 							vm.succes = null;
+							vm.eroare = error.response.data.message;
+							vm.incarca = false;
+						})
+				},
+				addDatePersonale: function () {
+					this.incarca = true;
+					var vm = this;
+					axios.post('/date_personale', {
+						id: vm.public_key,
+						nume: vm.datePersonale.nume,
+						prenume: vm.datePersonale.prenume,
+						cnp: vm.datePersonale.cnp
+					})
+						.then(function (response) {
+							vm.eroare = null;
+							vm.incarca = false;
+						}).catch(function (error) {
+							vm.success = null;
 							vm.eroare = error.response.data.message;
 							vm.incarca = false;
 						})
