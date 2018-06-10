@@ -43,10 +43,11 @@ class Node:
         an_scolar = input('an_scolar ')
         semestru = input('semestru ')
         data_intamplarii = input('data_intamplarii ')
+        tip_unitate = input('tip_unitate')
         unitate_invatamant = input('unitate_invatamant ')
         specializare = input('specializare ')
         comentariu = input('comentariu ')
-        return receptor, InfoDidactic(tip_info, materie, descriere,  nota, an_scolar,data_intamplarii, data_intamplarii, unitate_invatamant, specializare, comentariu)
+        return receptor, InfoDidactic(tip_info, materie, descriere,  nota, an_scolar, semestru, data_intamplarii, tip_unitate, unitate_invatamant, specializare, comentariu)
 
     def get_user_choice(self):
         return input('Alegerea dumneavoastra: ')
@@ -103,8 +104,8 @@ class Node:
                 dateele = self.blockchain.get_date_de_introdus()
                 print(dateele)
             elif user_choice == '10':
-                print(self.blockchain.get_medie_materie_an(
-                    '123', 'aciee', 'cti', '2', 'pclp'))
+                print(self.blockchain.get_medie_semestriala(
+                    '123', 'aciee', 'cti', '2', '2', 'pclp'))
             elif user_choice == 'q':
                 waiting_for_input = False
             else:

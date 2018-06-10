@@ -114,9 +114,11 @@ def add_rezultat():
                                  info_didactic_data['materie'],
                                  info_didactic_data['descriere'],
                                  info_didactic_data['nota'],
+                                 info_didactic_data['credite'],
                                  info_didactic_data['an_scolar'],
                                  info_didactic_data['semestru'],
                                  info_didactic_data['data_intamplarii'],
+                                 info_didactic_data['tip_unitate'],
                                  info_didactic_data['unitate_invatamant'],
                                  info_didactic_data['specializare'],
                                  info_didactic_data['comentariu'])
@@ -140,17 +142,19 @@ def add_rezultat():
         return jsonify(response), 500
 
 
-@app.route('/medie', methods=['POST'])
-def get_medie():
+@app.route('/medie_semestriala', methods=['POST'])
+def get_medie_semestriala():
     values = request.get_json()
-    id = values['id']
+    emitator = values['emitator']
+    receptor = values['receptor']
+    tip_unitate = values['tip_unitate']
     unitate_invatamant = values['unitate_invatamant']
     specializare = values['specializare']
     anul = values['anul']
     semestru = values['semestru']
     materie = values['materie']
-    media = blockchain.get_medie_materie_an(
-        id, unitate_invatamant, specializare, anul, semestru, materie)
+    media = blockchain.get_medie_semestriala(
+        emitator, receptor, tip_unitate, unitate_invatamant, specializare, anul, semestru, materie)
     if media != None:
         response = {
             'message': 'Calculul mediei a reusit',
@@ -159,7 +163,7 @@ def get_medie():
         return jsonify(response), 200
     else:
         response = {
-            'message': 'Calculul mediei a esuat'
+            'message': 'Calculul mediei a esuat. Nu am toate datele sau date valide'
         }
         return jsonify(response), 500
 
