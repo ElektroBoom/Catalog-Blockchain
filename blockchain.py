@@ -17,8 +17,9 @@ class Blockchain:
         self.chain = [genesis_block]
         self.__date_de_introdus = []
         self.utilizatori = []
-        self.load_data()
         self.hosting_node = hosting_node_id
+        self.__peer_nodes = set()
+        self.load_data()
 
     @property
     def chain(self):
@@ -55,6 +56,7 @@ class Blockchain:
                 self.chain = file_content['chain']
                 self.__date_de_introdus = file_content['rez']
                 self.utilizatori = file_content['utilizatori']
+                self.__peer_nodes = file_content['noduri']
         except (IOError, IndexError):
             pass
 
@@ -63,7 +65,9 @@ class Blockchain:
             with open(nume_fisier, mode='wb') as f:
                 saved_data = {'chain': self.chain,
                               'rez': self.__date_de_introdus,
-                              'utilizatori': self.utilizatori}
+                              'utilizatori': self.utilizatori,
+                              'noduri': self.__peer_nodes
+                              }
                 f.write(pickle.dumps(saved_data))
         except IOError:
             print('Saving fail!')
@@ -84,13 +88,11 @@ class Blockchain:
         for block in self.chain:
             for rez in block.rezultate:
                 if rez.receptor == receptor and rez.emitator == emitator and rez.info_didactic.tip_unitate == tip_unitate and rez.info_didactic.unitate_invatamant == unitate_invatamant and rez.info_didactic.specializare == specializare and rez.info_didactic.an_scolar == anul and rez.info_didactic.semestru == semestru and rez.info_didactic.materie == materie and rez.info_didactic.tip_info == 'Nota':
-                    lista_rezultate.append(
-                        float(rez.info_didactic.nota) * (float(rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1))
+                    lista_rezultate.append(float(rez.info_didactic.nota) * (float(
+                        rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1))
 
-                    lista_credite.append(
-                        float(rez.info_didactic.credite)
-                        if rez.info_didactic.tip_unitate == 'univeristate'
-                        else 1)
+                    lista_credite.append(float(
+                        rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1)
         lista_rezultate = [float(elem) for elem in lista_rezultate]
         if len(lista_credite) > 0:
             return sum(lista_rezultate)/sum(lista_credite)
@@ -103,13 +105,11 @@ class Blockchain:
         for block in self.chain:
             for rez in block.rezultate:
                 if rez.receptor == receptor and rez.info_didactic.tip_unitate == tip_unitate and rez.info_didactic.unitate_invatamant == unitate_invatamant and rez.info_didactic.specializare == specializare and rez.info_didactic.an_scolar == anul and rez.info_didactic.tip_info == 'Nota':
-                    lista_rezultate.append(
-                        float(rez.info_didactic.nota) * (float(rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1))
+                    lista_rezultate.append(float(rez.info_didactic.nota) * (float(
+                        rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1))
 
-                    lista_credite.append(
-                        float(rez.info_didactic.credite)
-                        if rez.info_didactic.tip_unitate == 'univeristate'
-                        else 1)
+                    lista_credite.append(float(
+                        rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1)
         lista_rezultate = [float(elem) for elem in lista_rezultate]
         if len(lista_credite) > 0:
             return sum(lista_rezultate)/sum(lista_credite)
@@ -153,3 +153,14 @@ class Blockchain:
         self.__date_de_introdus = []
         self.save_data()
         return block
+
+    def add_peer_node(self, node):
+        self.__peer_nodes.add(node)
+        self.save_data()
+
+    def remove_peer_node(self, node):
+        self.__peer_nodes.discard(node)
+        self.save_data()
+
+    def get_peer_nodes(self):
+        return list(self.__peer_nodes)
