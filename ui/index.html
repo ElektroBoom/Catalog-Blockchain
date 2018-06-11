@@ -159,6 +159,11 @@
 						<h5>Medii</h5>
 					</a>
 				</li>
+				<li class="nav-item ">
+					<a class="nav-link" href="#noduri" data-toggle="pill">
+						<h5>Noduri</h5>
+					</a>
+				</li>
 				<div class="dropdown-divider"></div>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
@@ -571,6 +576,46 @@
 				</div>
 			</div>
 		</div>
+		<div id="noduri" class="tab-pane fade in animated bounceInDown">
+			<div class="container">
+				<form @submit.prevent="onAddNode">
+					<div class="input-group mb-3">
+
+						<div class="input-group-prepend">
+							<span class="input-group-text badge-dark">Nod</span>
+						</div>
+						<input type="text" class="form-control" v-model="nodDeAdaugat" placeholder="localhost:5000" required>
+						<div class="input-group-append">
+							<button class="btn btn-dark">
+								<a href="#search" data-toggle="pill">
+									<img src="https://i.imgur.com/hjvIyPj.png" width="20px">
+								</a>
+							</button>
+						</div>
+					</div>
+				</form>
+				<div class="row">
+					<div class="col">
+						<button @click="onLoadNodes" class="btn btn-dark">
+							Incarca noduri
+						</button>
+					</div>
+				</div>
+				<br>
+				<div v-if="nodes.length > 0" class="row">
+					<div class="col">
+						<button v-for="node in nodes" @click="onRemoveNode(node)" class="list-group-item list-group-item-action btn btn-dark">
+							{{node}} (sterge)
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="search" class="tab-pane fade in animated bounceInDown">
+			<div class="container">
+				ssss
+			</div>
+		</div>
 	</div>
 	<script>
 		var vm = new Vue({
@@ -578,6 +623,7 @@
 			data: {
 				blockchain: [],
 				rezultate: [],
+				nodes: [],
 				succes: null,
 				eroare: null,
 				incarca: false,
@@ -585,6 +631,7 @@
 				private_key: null,
 				public_key: null,
 				cheieRezultate: null,
+				nodDeAdaugat: null,
 				datePersonale: {
 					nume: '',
 					prenume: '',
@@ -800,6 +847,53 @@
 							vm.eroare = error.response.data.message;
 							vm.incarca = false;
 						})
+				},
+				onAddNode: function () {
+					this.incarca = true;
+					var vm = this;
+					axios.post('/node', {
+						node: this.nodDeAdaugat
+					})
+						.then(function (response) {
+							vm.error = null;
+							vm.nodes = response.data.all_nodes;
+							vm.incarca = false;
+						})
+						.catch(function (error) {
+							vm.succes = null;
+							vm.error = error.response.data.message;
+							vm.incarca = false;
+						});
+				},
+				onLoadNodes: function () {
+					this.incarca = true;
+					var vm = this;
+					axios.get('/nodes')
+						.then(function (response) {
+							vm.error = null;
+							vm.nodes = response.data.all_nodes
+							vm.incarca = false;
+						})
+						.catch(function (error) {
+							vm.success = null;
+							vm.error = error.response.data.message;
+							vm.incarca = false;
+						});
+				},
+				onRemoveNode: function (node_url) {
+					this.incarca = true;
+					var vm = this;
+					axios.delete('/node/' + node_url)
+						.then(function (response) {
+							vm.error = null;
+							vm.nodes = response.data.all_nodes
+							vm.incarca = false;
+						})
+						.catch(function (error) {
+							vm.success = null;
+							vm.error = error.response.data.message;
+							vm.incarca = false;
+						});
 				}
 			}
 		})

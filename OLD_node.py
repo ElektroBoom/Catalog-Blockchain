@@ -13,8 +13,8 @@ nume_fisier = 'carnet.txt'
 class Node:
 
     def __init__(self):
-        self.carnet = Carnet()
-        self.blockchain = Blockchain(self.carnet.public_key)
+        self.carnet = Carnet(1)
+        self.blockchain = Blockchain(self.carnet.public_key, 1)
 
     def load_user_data(self):
         incarcat = False
@@ -40,6 +40,7 @@ class Node:
         materie = input('materie ')
         descriere = input('descriere ')
         nota = input('nota ')
+        credite = input('credite ')
         an_scolar = input('an_scolar ')
         semestru = input('semestru ')
         data_intamplarii = input('data_intamplarii ')
@@ -47,7 +48,8 @@ class Node:
         unitate_invatamant = input('unitate_invatamant ')
         specializare = input('specializare ')
         comentariu = input('comentariu ')
-        return receptor, InfoDidactic(tip_info, materie, descriere,  nota, an_scolar, semestru, data_intamplarii, tip_unitate, unitate_invatamant, specializare, comentariu)
+        return receptor, InfoDidactic(tip_info, materie, descriere,  nota, credite, an_scolar,
+                                      semestru, data_intamplarii, tip_unitate, unitate_invatamant, specializare, comentariu)
 
     def get_user_choice(self):
         return input('Alegerea dumneavoastra: ')
@@ -92,10 +94,10 @@ class Node:
                 print(self.blockchain.utilizatori)
             elif user_choice == '5':
                 self.carnet.create_keys()
-                self.blockchain = Blockchain(self.carnet.public_key)
+                self.blockchain = Blockchain(self.carnet.public_key, 1)
             elif user_choice == '6':
                 self.carnet.load_keys()
-                self.blockchain = Blockchain(self.carnet.public_key)
+                self.blockchain = Blockchain(self.carnet.public_key, 1)
             elif user_choice == '7':
                 self.carnet.save_keys()
             elif user_choice == '8':
@@ -104,8 +106,8 @@ class Node:
                 dateele = self.blockchain.get_date_de_introdus()
                 print(dateele)
             elif user_choice == '10':
-                print(self.blockchain.get_medie_semestriala(
-                    '123', 'aciee', 'cti', '2', '2', 'pclp'))
+                print(self.blockchain.get_medie_semestriala('222',
+                                                            '123', 'universitate', 'aciee', 'cti', '2', '2', 'pclp'))
             elif user_choice == 'q':
                 waiting_for_input = False
             else:

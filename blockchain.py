@@ -1,24 +1,24 @@
 import hashlib as hl
 import json
 import pickle
-
+import requests
 from utility.verification import Verification
 from utility.hash_util import hash_block
 from block import Block
 from rezultat import Rezultat
 from carnet import Carnet
-
-nume_fisier = 'blockchain.ekb'
+from info_didactic import InfoDidactic
 
 
 class Blockchain:
-    def __init__(self, hosting_node_id):
+    def __init__(self, public_key, node_id):
         genesis_block = Block(0, '', [], 123, 0)
         self.chain = [genesis_block]
         self.__date_de_introdus = []
         self.utilizatori = []
-        self.hosting_node = hosting_node_id
+        self.public_key = public_key
         self.__peer_nodes = set()
+        self.node_id = node_id
         self.load_data()
 
     @property
@@ -51,7 +51,7 @@ class Blockchain:
 
     def load_data(self):
         try:
-            with open(nume_fisier, mode='rb') as f:
+            with open('blockchain-{}.ekb'.format(self.node_id), mode='rb') as f:
                 file_content = pickle.loads(f.read())
                 self.chain = file_content['chain']
                 self.__date_de_introdus = file_content['rez']
@@ -62,7 +62,7 @@ class Blockchain:
 
     def save_data(self):
         try:
-            with open(nume_fisier, mode='wb') as f:
+            with open('blockchain-{}.ekb'.format(self.node_id), mode='wb') as f:
                 saved_data = {'chain': self.chain,
                               'rez': self.__date_de_introdus,
                               'utilizatori': self.utilizatori,
@@ -73,7 +73,7 @@ class Blockchain:
             print('Saving fail!')
 
     def get_rezultate(self, id):
-        if self.hosting_node == None:
+        if self.public_key == None:
             return None
         lista_rezultate = []
         for block in self.chain:
@@ -104,6 +104,21 @@ class Blockchain:
         lista_credite = []
         for block in self.chain:
             for rez in block.rezultate:
+                if not type(rez.info_didactic) is InfoDidactic:
+                    info_didactic_data = rez.info_didactic
+                    info_didactic = InfoDidactic(info_didactic_data['tip_info'],
+                                                 info_didactic_data['materie'],
+                                                 info_didactic_data['descriere'],
+                                                 info_didactic_data['nota'],
+                                                 info_didactic_data['credite'],
+                                                 info_didactic_data['an_scolar'],
+                                                 info_didactic_data['semestru'],
+                                                 info_didactic_data['data_intamplarii'],
+                                                 info_didactic_data['tip_unitate'],
+                                                 info_didactic_data['unitate_invatamant'],
+                                                 info_didactic_data['specializare'],
+                                                 info_didactic_data['comentariu'])
+                    rez.info_didactic = info_didactic
                 if rez.receptor == receptor and rez.info_didactic.tip_unitate == tip_unitate and rez.info_didactic.unitate_invatamant == unitate_invatamant and rez.info_didactic.specializare == specializare and rez.info_didactic.an_scolar == anul and rez.info_didactic.tip_info == 'Nota':
                     lista_rezultate.append(float(rez.info_didactic.nota) * (float(
                         rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1))
@@ -129,18 +144,31 @@ class Blockchain:
             return None
         return self.__chain[-1]
 
-    def add_nota(self, emitator, receptor, info_didactic, semnatura):
-        if self.hosting_node == None:
-            return False
+    def add_nota(self, emitator, receptor, info_didactic, semnatura, is_receiving=False):
         rezultat = Rezultat(emitator, receptor, info_didactic, semnatura)
+        print(rezultat)
         if not Carnet.verify_rezultat(rezultat):
             return False
         self.__date_de_introdus.append(rezultat)
         self.save_data()
+        if not is_receiving:
+            for node in self.__peer_nodes:
+                url = 'http://{}/broadcast_note'.format(node)
+                try:
+                    response = requests.post(url, json={'emitator': emitator,
+                                                        'receptor': receptor,
+                                                        'info_didactic': info_didactic.to_ordered_dict(),
+                                                        'semnatura': semnatura
+                                                        })
+                    if response.status_code == 400 or response.status_code == 500:
+                        print('nota aiurea')
+                        return False
+                except requests.exceptions.ConnectionError:
+                    continue
         return True
 
     def mine_block(self):
-        if self.hosting_node == None:
+        if self.public_key == None:
             return None
         hashed_last_block = hash_block(self.get_last_blockchain_value())
         proof = self.proof_of_work()
@@ -152,7 +180,40 @@ class Blockchain:
         self.__chain.append(block)
         self.__date_de_introdus = []
         self.save_data()
+        for node in self.__peer_nodes:
+            url = 'http://{}/broadcast_block'.format(node)
+            block_convertit = block.__dict__.copy()
+            block_convertit['rezultate'] = [rez.to_ordered_dict()
+                                            for rez in block_convertit['rezultate']]
+            try:
+                response = requests.post(url, json={'block': block_convertit})
+                if response.status_code == 400 or response.status_code == 500:
+                    print('bloc aiurea')
+            except requests.exceptions.ConnectionError:
+                continue
         return block
+
+    def add_block(self, block):
+        rezultate = [Rezultat(rez['emitator'], rez['receptor'], rez['info_didactic'],
+                              rez['semnatura']) for rez in block['rezultate']]
+        proof_valid = Verification.valid_proof(
+            rezultate, block['previous_hash'], block['proof'])
+        hashes_match = hash_block(self.chain[-1]) == block['previous_hash']
+        if not proof_valid or not hashes_match:
+            return False
+        bloc_convertit = Block(
+            block['index'], block['previous_hash'], rezultate,  block['proof'], block['timestamp'])
+        self.__chain.append(bloc_convertit)
+        stored_rezultate = self.__date_de_introdus[:]
+        for dDI in block['rezultate']:
+            for openDate in stored_rezultate:
+                if openDate.emitator == dDI['emitator'] and openDate.receptor == dDI['receptor'] and openDate.semnatura == dDI['semnatura']:
+                    try:
+                        self.__date_de_introdus.remove(openDate)
+                    except ValueError:
+                        print('Element deja eliminat')
+        self.save_data()
+        return True
 
     def add_peer_node(self, node):
         self.__peer_nodes.add(node)

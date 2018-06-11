@@ -6,10 +6,9 @@ from blockchain import Blockchain
 from info_didactic import InfoDidactic
 from utilizator import Utilizator
 from json import loads
+from argparse import ArgumentParser
 
 app = Flask(__name__)
-carnet = Carnet()
-blockchain = Blockchain(carnet.public_key)
 CORS(app)
 
 
@@ -23,7 +22,7 @@ def create_keys():
     carnet.create_keys()
     if carnet.save_keys():
         global blockchain
-        blockchain = Blockchain(carnet.public_key)
+        blockchain = Blockchain(carnet.public_key, port)
         response = {
             'public_key': carnet.public_key,
             'private_key': carnet.private_key
@@ -40,7 +39,7 @@ def create_keys():
 def load_keys():
     if carnet.load_keys():
         global blockchain
-        blockchain = Blockchain(carnet.public_key)
+        blockchain = Blockchain(carnet.public_key, port)
         response = {
             'public_key': carnet.public_key,
             'private_key': carnet.private_key
@@ -90,6 +89,54 @@ def get_chain():
     return jsonify(dict_chain), 200
 
 
+@app.route('/broadcast_note', methods=['POST'])
+def broadcast_note():
+    values = request.get_json()
+    if not values:
+        response = {
+            'message': 'Nu am gasit date'
+        }
+        return jsonify(response), 400
+    required = ['emitator', 'receptor', 'info_didactic', 'semnatura']
+    if not all(key in values for key in required):
+        response = {
+            'message': 'Lipsesc date'
+        }
+        return jsonify(response), 400
+    emitator = values['emitator']
+    receptor = values['receptor']
+    info_didactic_data = values['info_didactic']
+    info_didactic = InfoDidactic(info_didactic_data['tip_info'],
+                                 info_didactic_data['materie'],
+                                 info_didactic_data['descriere'],
+                                 info_didactic_data['nota'],
+                                 info_didactic_data['credite'],
+                                 info_didactic_data['an_scolar'],
+                                 info_didactic_data['semestru'],
+                                 info_didactic_data['data_intamplarii'],
+                                 info_didactic_data['tip_unitate'],
+                                 info_didactic_data['unitate_invatamant'],
+                                 info_didactic_data['specializare'],
+                                 info_didactic_data['comentariu'])
+    semnatura = values['semnatura']
+    if blockchain.add_nota(emitator, receptor, info_didactic, semnatura, is_receiving=True):
+        response = {
+            'message': 'Adaugarea unei note a reusit',
+            'rezultat': {
+                'emitator': emitator,
+                'receptor': receptor,
+                'info_didactic': info_didactic_data,
+                'semnatura': semnatura
+            }
+        }
+        return jsonify(response), 200
+    else:
+        response = {
+            'message': 'Adaugarea unei note a esuat'
+        }
+        return jsonify(response), 500
+
+
 @app.route('/rezultat', methods=['POST'])
 def add_rezultat():
     if carnet.public_key == None:
@@ -131,16 +178,51 @@ def add_rezultat():
             'rezultat': {
                 'emitator': carnet.public_key,
                 'receptor': receptor,
-                'info_didactic': info_didactic_data,
+                'info_didactic': info_didactic.to_ordered_dict(),
                 'semnatura': semnatura
             }
         }
-        return jsonify(response), 200
+        return jsonify(response), 201
     else:
         response = {
-            'message': 'Adaugarea unei note a esuat'
+            'message': 'Adaugarea unei note a esuat reeee'
         }
         return jsonify(response), 500
+
+
+@app.route('/broadcast_block', methods=['POST'])
+def broadcast_block():
+    values = request.get_json()
+    if not values:
+        response = {
+            'message': 'Nu am gasit date'
+        }
+        return jsonify(response), 400
+    if 'block' not in values:
+        response = {
+            'message': 'Nu am toate datele'
+        }
+        return jsonify(response), 400
+    block = values['block']
+    print(block)
+    if block['index'] == blockchain.chain[-1].index + 1:
+        if blockchain.add_block(block):
+            response = {
+                'message': 'Block adaugat'
+            }
+            return jsonify(response), 201
+        else:
+            response = {
+                'message': 'Block invalid'
+            }
+            return jsonify(response), 500
+    elif block['index'] > blockchain.chain[-1].index:
+        pass
+    else:
+        response = {
+            'message': 'Blockchain-ul este scurt, adaugarea unui bloc a esuat'
+        }
+        return jsonify(response), 409
 
 
 @app.route('/medie_semestriala', methods=['POST'])
@@ -178,7 +260,11 @@ def get_medie_anuala():
     specializare = values['specializare']
     anul = values['anul']
     medie = blockchain.get_medie_anuala(
-        receptor, tip_unitate, unitate_invatamant, specializare, anul)
+        receptor, 
+        tip_unitate, 
+        unitate_invatamant, 
+        specializare, 
+        anul)
     if medie != None:
         response = {
             'message': 'Calculul mediei a reusit',
@@ -286,4 +372,10 @@ def get_nodes():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=51328)
+    parser = ArgumentParser()
+    parser.add_argument('-p', '--port', type=int, default=51328)
+    args = parser.parse_args()
+    port = args.port
+    carnet = Carnet(port)
+    blockchain = Blockchain(carnet.public_key, port)
+    app.run(host='0.0.0.0', port=port)
