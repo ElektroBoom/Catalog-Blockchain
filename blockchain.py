@@ -63,6 +63,23 @@ class Blockchain:
     def save_data(self):
         try:
             with open('blockchain-{}.ekb'.format(self.node_id), mode='wb') as f:
+                for block in self.chain:
+                    for rez in block.rezultate:
+                        if not type(rez.info_didactic) is InfoDidactic:
+                            info_didactic_data = rez.info_didactic
+                            info_didactic = InfoDidactic(info_didactic_data['tip_info'],
+                                                         info_didactic_data['materie'],
+                                                         info_didactic_data['descriere'],
+                                                         info_didactic_data['nota'],
+                                                         info_didactic_data['credite'],
+                                                         info_didactic_data['an_scolar'],
+                                                         info_didactic_data['semestru'],
+                                                         info_didactic_data['data_intamplarii'],
+                                                         info_didactic_data['tip_unitate'],
+                                                         info_didactic_data['unitate_invatamant'],
+                                                         info_didactic_data['specializare'],
+                                                         info_didactic_data['comentariu'])
+                            rez.info_didactic = info_didactic
                 saved_data = {'chain': self.chain,
                               'rez': self.__date_de_introdus,
                               'utilizatori': self.utilizatori,
