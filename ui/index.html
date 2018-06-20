@@ -347,7 +347,7 @@
 								<div class="input-group-prepend">
 									<label class="input-group-text badge-dark" for="tipRezultat">Tip rezultat</label>
 								</div>
-								<select class="custom-select" v-model="rezultat.tip_info" id="tipRezultat" onchange="$('#tipRezultat').val()=='Nota'?$('#nota').collapse('show'):$('#nota').collapse('hide');">
+								<select class="custom-select" v-model="rezultat.tip_info" id="tipRezultat" onchange="$('#tipRezultat').val()=='Nota'?$('#nota').collapse('show'):$('#nota').collapse('hide');" required>
 									<option value="Nota" selected>Nota</option>
 									<option value="Absenta">Absenta</option>
 								</select>
@@ -362,7 +362,7 @@
 								<div class="input-group-prepend">
 									<label class="input-group-text badge-dark" for="tipUnitate">Tip unitate</label>
 								</div>
-								<select class="custom-select" v-model="rezultat.tip_unitate" id="tipUnitate" onchange="$('#tipUnitate').val()=='universitate'?$('#credite').collapse('show'):$('#credite').collapse('hide');">
+								<select class="custom-select" v-model="rezultat.tip_unitate" id="tipUnitate" onchange="$('#tipUnitate').val()=='universitate'?$('#credite').collapse('show'):$('#credite').collapse('hide');" required>
 									<option value="universitate" selected>Facultate</option>
 									<option value="scoalaSauLiceu">Liceu / Scoala</option>
 								</select>
