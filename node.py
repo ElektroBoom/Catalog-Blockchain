@@ -53,6 +53,11 @@ def load_keys():
 
 @app.route('/mine', methods=['POST'])
 def mine():
+    if blockchain.resolve_conflicts == True:
+        response = {
+            'message': 'Conflicte in retea. Blocul nu a fost adaugat'
+        }
+        return jsonify(response), 409
     block = blockchain.mine_block()
     if block != None:
         dict_block = block.__dict__.copy()
@@ -70,7 +75,19 @@ def mine():
         }
         return jsonify(response), 500
 
-
+@app.route('/resolve_conflicts', methods=['POST'])
+def resolve_conflicts():
+    replaced = blockchain.resolve()
+    if replaced:
+        response = {
+            'message': 'BLockchain inlocuit'
+        }
+    else:
+        response = {
+            'message': 'BLockchain pastrat'
+        }
+    return jsonify(response),200
+    
 @app.route('/rezultate', methods=['GET'])
 def get_rezultate():
     rezultate = blockchain.get_date_de_introdus()
@@ -214,9 +231,13 @@ def broadcast_block():
             response = {
                 'message': 'Block invalid'
             }
-            return jsonify(response), 500
+            return jsonify(response), 409
     elif block['index'] > blockchain.chain[-1].index:
-        pass
+        response = {
+            'message': 'Blockchain-ul este diferit de cel local.'
+        }
+        blockchain.resolve_conflicts = True
+        return jsonify(response), 200
     else:
         response = {
             'message': 'Blockchain-ul este scurt, adaugarea unui bloc a esuat'
@@ -259,10 +280,10 @@ def get_medie_anuala():
     specializare = values['specializare']
     anul = values['anul']
     medie = blockchain.get_medie_anuala(
-        receptor, 
-        tip_unitate, 
-        unitate_invatamant, 
-        specializare, 
+        receptor,
+        tip_unitate,
+        unitate_invatamant,
+        specializare,
         anul)
     if medie != None:
         response = {

@@ -19,6 +19,7 @@ class Blockchain:
         self.public_key = public_key
         self.__peer_nodes = set()
         self.node_id = node_id
+        self.resolve_conflicts = False
         self.load_data()
 
     @property
@@ -193,6 +194,8 @@ class Blockchain:
                 response = requests.post(url, json={'block': block_convertit})
                 if response.status_code == 400 or response.status_code == 500:
                     print('bloc aiurea')
+                if response.status_code == 409:
+                    self.resolve_conflicts = True
             except requests.exceptions.ConnectionError:
                 continue
         return block
@@ -218,6 +221,47 @@ class Blockchain:
                         print('Element deja eliminat')
         self.save_data()
         return True
+
+    def resolve(self):
+        winner_chain = self.chain
+        replace = False
+        for node in self.__peer_nodes:
+            url = 'http://{}/chain'.format(node)
+            try:
+                response = requests.get(url)
+                node_chain = response.json()
+                node_chain = [Block(block['index'],
+                                    block['previous_hash'],
+                                    [Rezultat(rez['emitator'],
+                                              rez['receptor'],
+                                              InfoDidactic(rez['info_didactic']['tip_info'],
+                                                           rez['info_didactic']['materie'],
+                                                           rez['info_didactic']['descriere'],
+                                                           rez['info_didactic']['nota'],
+                                                           rez['info_didactic']['credite'],
+                                                           rez['info_didactic']['an_scolar'],
+                                                           rez['info_didactic']['semestru'],
+                                                           rez['info_didactic']['data_intamplarii'],
+                                                           rez['info_didactic']['tip_unitate'],
+                                                           rez['info_didactic']['unitate_invatamant'],
+                                                           rez['info_didactic']['specializare'],
+                                                           rez['info_didactic']['comentariu']),
+                                              rez['semnatura']) for rez in block['rezultate']],
+                                    block['proof'],
+                                    block['timestamp']) for block in node_chain]
+                node_chain_length = len(node_chain)
+                local_chain_length = len(winner_chain)
+                if node_chain_length > local_chain_length and Verification.verify_chain(node_chain):
+                    winner_chain = node_chain
+                    replace = True
+            except requests.exceptions.ConnectionError:
+                continue
+        self.resolve_conflicts = False
+        self.chain = winner_chain
+        if replace:
+            self.__date_de_introdus = []
+        self.save_data()
+        return replace
 
     def add_peer_node(self, node):
         self.__peer_nodes.add(node)
