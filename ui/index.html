@@ -160,8 +160,8 @@
 					</a>
 				</li>
 				<li class="nav-item ">
-					<a class="nav-link" href="#noduri" data-toggle="pill">
-						<h5>Noduri</h5>
+					<a class="nav-link" href="#pers" data-toggle="pill">
+						<h5>Parteneri</h5>
 					</a>
 				</li>
 				<div class="dropdown-divider"></div>
@@ -197,7 +197,7 @@
 		<div id="start" class="tab-pane fade in" style="margin-top: 100px">
 			<div class="container">
 				<div class="alert alert-info text-center animated bounceInRight" role="alert">
-					Genereaza sau incarca o cheie si completeaza datele personale
+					Genereaza sau incarca o cheie
 				</div>
 				<div class="jumbotron animated bounceInLeft">
 					<h1 class="text-center ">Catalog BlockChain</h1>
@@ -239,35 +239,6 @@
 							<button class="btn btn-dark" onclick="copiaza('privata')">Copy</button>
 						</div>
 					</div>
-					<h2 v-if="trebuieInregistrat"> Date Personale</h2>
-					<form v-if="trebuieInregistrat" @submit.prevent="addDatePersonale">
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">Nume</span>
-							</div>
-							<input type="text" class="form-control" v-model="datePersonale.nume" required>
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">Prenume</span>
-							</div>
-							<input type="text" class="form-control" v-model="datePersonale.prenume" required>
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text badge-dark">CNP</span>
-							</div>
-							<input type="text" class="form-control" v-model="datePersonale.cnp" required>
-						</div>
-						<div class="input-group">
-							<button type="submit" class="btn btn-secondary form-control">
-								Trimite
-							</button>
-							<button class="btn btn-secondary form-control" type="reset" id="btnReset">
-								Reseteaza campuri
-							</button>
-						</div>
-					</form>
 				</div>
 			</div>
 		</div>
@@ -347,7 +318,8 @@
 								<div class="input-group-prepend">
 									<label class="input-group-text badge-dark" for="tipRezultat">Tip rezultat</label>
 								</div>
-								<select class="custom-select" v-model="rezultat.tip_info" id="tipRezultat" onchange="$('#tipRezultat').val()=='Nota'?$('#nota').collapse('show'):$('#nota').collapse('hide');" required>
+								<select class="custom-select" v-model="rezultat.tip_info" id="tipRezultat" onchange="$('#tipRezultat').val()=='Nota'?$('#nota').collapse('show'):$('#nota').collapse('hide');"
+								 required>
 									<option value="Nota" selected>Nota</option>
 									<option value="Absenta">Absenta</option>
 								</select>
@@ -362,7 +334,8 @@
 								<div class="input-group-prepend">
 									<label class="input-group-text badge-dark" for="tipUnitate">Tip unitate</label>
 								</div>
-								<select class="custom-select" v-model="rezultat.tip_unitate" id="tipUnitate" onchange="$('#tipUnitate').val()=='universitate'?$('#credite').collapse('show'):$('#credite').collapse('hide');" required>
+								<select class="custom-select" v-model="rezultat.tip_unitate" id="tipUnitate" onchange="$('#tipUnitate').val()=='universitate'?$('#credite').collapse('show'):$('#credite').collapse('hide');"
+								 required>
 									<option value="universitate" selected>Facultate</option>
 									<option value="scoalaSauLiceu">Liceu / Scoala</option>
 								</select>
@@ -576,39 +549,91 @@
 				</div>
 			</div>
 		</div>
-		<div id="noduri" class="tab-pane fade in animated bounceInDown">
+		<div id="pers" class="tab-pane fade in animated bounceInDown">
 			<div class="container">
-				<form @submit.prevent="onAddNode">
-					<div class="input-group mb-3">
-
-						<div class="input-group-prepend">
-							<span class="input-group-text badge-dark">Nod</span>
-						</div>
-						<input type="text" class="form-control" v-model="nodDeAdaugat" placeholder="localhost:5000" required>
-						<div class="input-group-append">
-							<button class="btn btn-dark">
-								<a href="#search" data-toggle="pill">
-									<img src="https://i.imgur.com/hjvIyPj.png" width="20px">
-								</a>
-							</button>
-						</div>
-					</div>
-				</form>
-				<div class="row">
-					<div class="col">
-						<button @click="onLoadNodes" class="btn btn-dark">
-							Incarca noduri
-						</button>
-					</div>
+				<div class="input-group">
+					<button onclick="$('#profesoriAcceptati').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#noduriAcceptate">
+						Noduri
+					</button>
+					<button onclick="$('#noduriAcceptate').collapse('hide');" class="btn btn-dark form-control" data-toggle="collapse" data-target="#profesoriAcceptati">
+						Profesori
+					</button>
 				</div>
 				<br>
-				<div v-if="nodes.length > 0" class="row">
-					<div class="col">
-						<button v-for="node in nodes" @click="onRemoveNode(node)" class="list-group-item list-group-item-action btn btn-dark">
-							{{node}} (sterge)
-						</button>
+				<div class="collapse" id="noduriAcceptate">
+					<div class="card card-body shadow-lg">
+						<h2>Noduri Acceptate</h2>
+						<form @submit.prevent="onAddNode">
+							<div class="input-group mb-3">
+
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Nod</span>
+								</div>
+								<input type="text" class="form-control" v-model="nodDeAdaugat" placeholder="localhost:5000" required>
+								<div class="input-group-append">
+									<button class="btn btn-dark">
+										<a href="#search" data-toggle="pill">
+											<img src="https://i.imgur.com/hjvIyPj.png" width="20px">
+										</a>
+									</button>
+								</div>
+							</div>
+						</form>
+						<div class="row">
+							<div class="col">
+								<button @click="onLoadNodes" class="btn btn-dark">
+									Incarca noduri
+								</button>
+							</div>
+						</div>
+						<br>
+						<div v-if="nodes.length > 0" class="row">
+							<div class="col">
+								<button v-for="node in nodes" @click="onRemoveNode(node)" class="list-group-item list-group-item-action btn btn-dark">
+									{{node}} (sterge)
+								</button>
+							</div>
+						</div>
 					</div>
 				</div>
+				<div class="collapse" id="profesoriAcceptati">
+					<div class="card card-body shadow-lg">
+						<h2>Profesori</h2>
+						<form @submit.prevent="onAddProfesor">
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text badge-dark">Profesor</span>
+								</div>
+								<input type="text" class="form-control" v-model="idProfIncredere" placeholder="cheia publica" required>
+								<div class="input-group-append">
+									<button class="btn btn-dark">
+										<a href="#search" data-toggle="pill">
+											<img src="https://i.imgur.com/hjvIyPj.png" width="20px">
+										</a>
+									</button>
+								</div>
+							</div>
+						</form>
+						<div class="row">
+							<div class="col">
+								<button @click="onLoadProfesori" class="btn btn-dark">
+									Incarca profesori de incredere
+								</button>
+							</div>
+						</div>
+						<br>
+						<div v-if="profesori.length > 0" class="row">
+							<div class="col">
+								<button v-for="profesor in profesori" @click="onRemoveProfesor(profesor)" class="list-group-item list-group-item-action btn btn-dark" style="overflow: hidden;text-overflow: ellipsis;">
+									{{profesor}} (sterge)
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="container">
+
 			</div>
 		</div>
 		<div id="search" class="tab-pane fade in animated bounceInDown">
@@ -624,6 +649,7 @@
 				blockchain: [],
 				rezultate: [],
 				nodes: [],
+				profesori: [],
 				succes: null,
 				eroare: null,
 				incarca: false,
@@ -632,11 +658,7 @@
 				public_key: null,
 				cheieRezultate: null,
 				nodDeAdaugat: null,
-				datePersonale: {
-					nume: '',
-					prenume: '',
-					cnp: ''
-				},
+				idProfIncredere: null,
 				rezultat: {
 					receptor: '',
 					info_didactic: {
@@ -830,24 +852,7 @@
 							vm.incarca = false;
 						})
 				},
-				addDatePersonale: function () {
-					this.incarca = true;
-					var vm = this;
-					axios.post('/date_personale', {
-						id: vm.public_key,
-						nume: vm.datePersonale.nume,
-						prenume: vm.datePersonale.prenume,
-						cnp: vm.datePersonale.cnp
-					})
-						.then(function (response) {
-							vm.eroare = null;
-							vm.incarca = false;
-						}).catch(function (error) {
-							vm.success = null;
-							vm.eroare = error.response.data.message;
-							vm.incarca = false;
-						})
-				},
+				
 				onAddNode: function () {
 					this.incarca = true;
 					var vm = this;
@@ -887,6 +892,57 @@
 						.then(function (response) {
 							vm.error = null;
 							vm.nodes = response.data.all_nodes
+							vm.incarca = false;
+						})
+						.catch(function (error) {
+							vm.success = null;
+							vm.error = error.response.data.message;
+							vm.incarca = false;
+						});
+				},
+
+
+
+				onAddProfesor: function () {
+					this.incarca = true;
+					var vm = this;
+					axios.post('/profesor', {
+						id: this.idProfIncredere
+					})
+						.then(function (response) {
+							vm.error = null;
+							vm.profesori = response.data.all_profesori;
+							vm.incarca = false;
+						})
+						.catch(function (error) {
+							vm.succes = null;
+							vm.error = error.response.data.message;
+							vm.incarca = false;
+						});
+				},
+				onLoadProfesori: function () {
+					this.incarca = true;
+					var vm = this;
+					axios.get('/profesori')
+						.then(function (response) {
+							vm.error = null;
+							vm.profesori = response.data.all_profesori
+							vm.incarca = false;
+							console.log(response.data.all_profesori);
+						})
+						.catch(function (error) {
+							vm.success = null;
+							vm.error = error.response.data.message;
+							vm.incarca = false;
+						});
+				},
+				onRemoveProfesor: function (cheie) {
+					this.incarca = true;
+					var vm = this;
+					axios.delete('/profesor/' + cheie)
+						.then(function (response) {
+							vm.error = null;
+							vm.nodes = response.data.all_profesori
 							vm.incarca = false;
 						})
 						.catch(function (error) {

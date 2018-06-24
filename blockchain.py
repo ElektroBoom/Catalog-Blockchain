@@ -15,7 +15,7 @@ class Blockchain:
         genesis_block = Block(0, '', [], 123, 0)
         self.chain = [genesis_block]
         self.__date_de_introdus = []
-        self.utilizatori = []
+        self.profesori = set()
         self.public_key = public_key
         self.__peer_nodes = set()
         self.node_id = node_id
@@ -29,22 +29,9 @@ class Blockchain:
     def chain(self, val):
         self.__chain = val
 
-    def get_utili4zatori(self):
-        return self.utilizatori[:]
-
-    def add_utilizatori(self, val):
-        if len(self.utilizatori) > 0:
-            for utilizator in self.utilizatori:
-                print(utilizator)
-                if not val.cnp == utilizator.cnp:
-                    self.utilizatori.append(val)
-                    return True
-                else:
-                    print('CNP-ul exista deja!')
-                    return False
-        else:
-            self.utilizatori.append(val)
-            return True
+    def add_prof_incredere(self, val):
+        self.profesori.add(val)
+        return True
 
     def get_date_de_introdus(self):
         return self.__date_de_introdus[:]
@@ -55,7 +42,7 @@ class Blockchain:
                 file_content = pickle.loads(f.read())
                 self.chain = file_content['chain']
                 self.__date_de_introdus = file_content['rez']
-                self.utilizatori = file_content['utilizatori']
+                self.profesori = file_content['profesori']
                 self.__peer_nodes = file_content['noduri']
         except (IOError, IndexError):
             pass
@@ -82,7 +69,7 @@ class Blockchain:
                             rez.info_didactic = info_didactic
                 saved_data = {'chain': self.chain,
                               'rez': self.__date_de_introdus,
-                              'utilizatori': self.utilizatori,
+                              'profesori': self.profesori,
                               'noduri': self.__peer_nodes
                               }
                 f.write(pickle.dumps(saved_data))
@@ -136,12 +123,12 @@ class Blockchain:
                                                  info_didactic_data['specializare'],
                                                  info_didactic_data['comentariu'])
                     rez.info_didactic = info_didactic
-                if rez.receptor == receptor and rez.info_didactic.tip_unitate == tip_unitate and rez.info_didactic.unitate_invatamant == unitate_invatamant and rez.info_didactic.specializare == specializare and rez.info_didactic.an_scolar == anul and rez.info_didactic.tip_info == 'Nota':
+                if rez.receptor == receptor and rez.emitator in self.profesori and rez.info_didactic.tip_unitate == tip_unitate and rez.info_didactic.unitate_invatamant == unitate_invatamant and rez.info_didactic.specializare == specializare and rez.info_didactic.an_scolar == anul and rez.info_didactic.tip_info == 'Nota':
                     lista_rezultate.append(float(rez.info_didactic.nota) * (float(
-                        rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1))
+                        rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'universitate' else 1))
 
                     lista_credite.append(float(
-                        rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'univeristate' else 1)
+                        rez.info_didactic.credite) if rez.info_didactic.tip_unitate == 'universitate' else 1)
         lista_rezultate = [float(elem) for elem in lista_rezultate]
         if len(lista_credite) > 0:
             return sum(lista_rezultate)/sum(lista_credite)
@@ -242,3 +229,14 @@ class Blockchain:
 
     def get_peer_nodes(self):
         return list(self.__peer_nodes)
+
+    def add_profesor(self, cheie):
+        self.profesori.add(cheie)
+        self.save_data()
+
+    def remove_profesor(self, cheie):
+        self.profesori.discard(cheie)
+        self.save_data()
+
+    def get_profesori(self):
+        return list(self.profesori)

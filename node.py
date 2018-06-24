@@ -4,7 +4,6 @@ from flask_cors import CORS
 from carnet import Carnet
 from blockchain import Blockchain
 from info_didactic import InfoDidactic
-from utilizator import Utilizator
 from json import loads
 from argparse import ArgumentParser
 
@@ -287,17 +286,14 @@ def addDatePersonale():
         }
         return jsonify(response), 400
     id = values['id']
-    nume = values['nume']
-    prenume = values['prenume']
-    cnp = values['cnp']
-    if blockchain.add_utilizatori(Utilizator(id, nume, prenume, cnp)):
+    if blockchain.add_prof_incredere(id):
         response = {
             'message': 'Adaugat cu succes'
         }
         return jsonify(response), 200
     else:
         response = {
-            'message': 'CNP-ul este inregistrat pentru altcineva'
+            'message': 'Eroare adaugare'
         }
         return jsonify(response), 500
 
@@ -367,6 +363,51 @@ def remove_node(node_url):
 def get_nodes():
     response = {
         'all_nodes': blockchain.get_peer_nodes()
+    }
+    return jsonify(response), 200
+
+
+@app.route('/profesor', methods=['POST'])
+def add_profesor():
+    values = request.get_json()
+    if not values:
+        response = {
+            'message': 'Nu am gasit date'
+        }
+        return jsonify(response), 400
+    if 'id' not in values:
+        response = {
+            'message': 'Nu am cheie atasata'
+        }
+        return jsonify(response), 400
+    idProf = values['id']
+    blockchain.add_profesor(idProf)
+    response = {
+        'message': 'Profesor atasat',
+        'all_profesori': blockchain.get_profesori()
+    }
+    return jsonify(response), 201
+
+
+@app.route('/profesor/<cheie>', methods=['DELETE'])
+def remove_profesor(cheie):
+    if cheie == '' or cheie == None:
+        response = {
+            'message': 'Nu am gasit date'
+        }
+        return jsonify(response), 400
+    blockchain.remove_profesor(cheie)
+    response = {
+        'message': 'Nod sters',
+        'all_profesori': blockchain.get_profesori()
+    }
+    return jsonify(response), 200
+
+
+@app.route('/profesori', methods=['GET'])
+def get_profesori():
+    response = {
+        'all_profesori': blockchain.get_profesori()
     }
     return jsonify(response), 200
 
