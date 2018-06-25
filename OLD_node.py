@@ -1,6 +1,5 @@
 from carnet import Carnet
 from blockchain import Blockchain
-from uuid import uuid4
 from utility.verification import Verification
 from utilizator import Utilizator
 import pickle
