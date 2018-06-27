@@ -15,10 +15,6 @@
 	<meta name="author" content="Iulian Oancea">
 	<meta http-equiv="Cache-control" content="public">
 	<style>
-		body {
-			overflow: scroll;
-		}
-
 		@media only screen and (max-width: 1000px),
 		(min-device-width: 600px) and (max-device-width: 860px) {
 
@@ -66,24 +62,26 @@
 				content: "Nota";
 			}
 			td:nth-of-type(5):before {
-				content: "An invatamant";
+				content: "Credite";
 			}
 			td:nth-of-type(6):before {
-				content: "Semestru";
+				content: "An invatamant";
 			}
 			td:nth-of-type(7):before {
-				content: "Data";
+				content: "Semestru";
 			}
 			td:nth-of-type(8):before {
-				content: "Unitate de invatamant";
+				content: "Data";
 			}
 			td:nth-of-type(9):before {
-				content: "Specializare";
+				content: "Unitate de invatamant";
 			}
 			td:nth-of-type(10):before {
+				content: "Specializare";
+			}
+			td:nth-of-type(11):before {
 				content: "Comentariu";
 			}
-
 		}
 
 		@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
@@ -181,7 +179,7 @@
 		<div v-if="eroare" id="eroare" class="alert alert-danger container" role="alert">
 			{{eroare}}
 		</div>
-		<div id="start" class="tab-pane fade in" style="margin-top: 100px">
+		<div id="start" class="tab-pane fade in">
 			<div class="container">
 				<div class="alert alert-info text-center animated bounceInRight" role="alert">
 					Genereaza sau incarca o cheie
@@ -260,6 +258,7 @@
 									<th>Materie</th>
 									<th>Descriere</th>
 									<th>Nota</th>
+									<th>Nr. credite</th>
 									<th>An invatamant</th>
 									<th>Semestru</th>
 									<th>Data</th>
@@ -270,16 +269,17 @@
 							</thead>
 							<tbody>
 								<tr v-for="rez in rezultate">
-									<td>{{rez.rezultat.tip_info}}</td>
-									<td>{{rez.rezultat.materie}}</td>
-									<td>{{rez.rezultat.descriere}}</td>
-									<td>{{rez.rezultat.nota}}</td>
-									<td>{{rez.rezultat.an_scolar}}</td>
-									<td>{{rez.rezultat.semestru}}</td>
-									<td>{{rez.rezultat.data_intamplarii}}</td>
-									<td>{{rez.rezultat.unitate_invatamant}}</td>
-									<td>{{rez.rezultat.specializare}}</td>
-									<td>{{rez.rezultat.comentariu}}</td>
+									<td>{{rez.info_didactic.tip_info}}</td>
+									<td>{{rez.info_didactic.materie}}</td>
+									<td>{{rez.info_didactic.descriere}}</td>
+									<td>{{rez.info_didactic.nota}}</td>
+									<td>{{rez.info_didactic.credite}}</td>
+									<td>{{rez.info_didactic.an_scolar}}</td>
+									<td>{{rez.info_didactic.semestru}}</td>
+									<td>{{rez.info_didactic.data_intamplarii}}</td>
+									<td>{{rez.info_didactic.unitate_invatamant}}</td>
+									<td>{{rez.info_didactic.specializare}}</td>
+									<td>{{rez.info_didactic.comentariu}}</td>
 								</tr>
 							</tbody>
 						</table>
@@ -784,6 +784,7 @@
 					}).then(function (response) {
 						vm.eroare = null;
 						vm.rezultate = response.data.rezultate;
+						console.log(response.data.rezultate);
 						vm.incarca = false;
 					}).catch(function (error) {
 						vm.success = null;

@@ -5,7 +5,7 @@ from collections import OrderedDict
 class InfoDidactic(Printable):
     """Clasa ce memoreaza """
 
-    def __init__(self, tip_info, materie, descriere,  nota, credite, an_scolar, semestru, data_intamplarii, tip_unitate, unitate_invatamant, specializare, comentariu):
+    def __init__(self, tip_info, materie, descriere, nota, credite, an_scolar, semestru, data_intamplarii, tip_unitate, unitate_invatamant, specializare, comentariu):
         self.tip_info = tip_info
         self.materie = materie
         self.descriere = descriere
