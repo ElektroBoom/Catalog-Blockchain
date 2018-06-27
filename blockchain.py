@@ -1,4 +1,3 @@
-import hashlib as hl
 import json
 import pickle
 import requests
