@@ -74,6 +74,7 @@ def mine():
         }
         return jsonify(response), 500
 
+
 @app.route('/resolve_conflicts', methods=['POST'])
 def resolve_conflicts():
     replaced = blockchain.resolve()
@@ -85,8 +86,9 @@ def resolve_conflicts():
         response = {
             'message': 'BLockchain pastrat'
         }
-    return jsonify(response),200
-    
+    return jsonify(response), 200
+
+
 @app.route('/rezultate', methods=['GET'])
 def get_rezultate():
     rezultate = blockchain.get_date_de_introdus()
@@ -297,27 +299,6 @@ def get_medie_anuala():
         return jsonify(response), 500
 
 
-@app.route('/date_personale', methods=['POST'])
-def addDatePersonale():
-    values = request.get_json()
-    if not values:
-        response = {
-            'message': 'Nu am gasit date'
-        }
-        return jsonify(response), 400
-    id = values['id']
-    if blockchain.add_prof_incredere(id):
-        response = {
-            'message': 'Adaugat cu succes'
-        }
-        return jsonify(response), 200
-    else:
-        response = {
-            'message': 'Eroare adaugare'
-        }
-        return jsonify(response), 500
-
-
 @app.route('/rezultat_id', methods=['POST'])
 def get_rezultate_pentru_id():
     values = request.get_json()
@@ -430,7 +411,6 @@ def get_profesori():
         'all_profesori': blockchain.get_profesori()
     }
     return jsonify(response), 200
-
 
 if __name__ == '__main__':
     parser = ArgumentParser()

@@ -10,8 +10,5 @@ class Rezultat(Printable):
         self.info_didactic = info_didactic
         self.semnatura = semnatura
 
-    def __repr__(self):
-        return str(self.__dict__)
-
     def to_ordered_dict(self):
         return OrderedDict([('emitator', self.emitator), ('receptor', self.receptor), ('info_didactic',  self.info_didactic.to_ordered_dict() if type(self.info_didactic) is InfoDidactic else self.info_didactic), ('semnatura', self.semnatura)])

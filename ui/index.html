@@ -17,7 +17,6 @@
 	<style>
 		@media only screen and (max-width: 1000px),
 		(min-device-width: 600px) and (max-device-width: 860px) {
-
 			table,
 			thead,
 			tbody,
@@ -26,21 +25,17 @@
 			tr {
 				display: block;
 			}
-
 			thead tr {
 				position: absolute;
 				top: -9999px;
 				left: -9999px;
 			}
-
-
 			td {
 				border: none;
 				position: relative;
 				padding-left: 50%;
 				text-align: right
 			}
-
 			td:before {
 				position: absolute;
 				top: 5px;
@@ -48,7 +43,6 @@
 				padding-right: 0px;
 				white-space: nowrap;
 			}
-
 			td:nth-of-type(1):before {
 				content: "Tip";
 			}
@@ -562,7 +556,7 @@
 								</div>
 								<input type="text" class="form-control" v-model="nodDeAdaugat" placeholder="localhost:5000" required>
 								<div class="input-group-append">
-									<button class="btn btn-dark">
+									<button type="submit" "btn btn-dark">
 										<a href="#search" data-toggle="pill">
 											<img src="https://i.imgur.com/hjvIyPj.png" width="20px">
 										</a>
