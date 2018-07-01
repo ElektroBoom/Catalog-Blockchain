@@ -631,7 +631,6 @@
 				succes: null,
 				eroare: null,
 				incarca: false,
-				trebuieInregistrat: false,
 				private_key: null,
 				public_key: null,
 				cheieRezultate: null,
@@ -700,10 +699,8 @@
 							vm.eroare = null;
 							vm.private_key = response.data.private_key;
 							vm.public_key = response.data.public_key;
-							vm.trebuieInregistrat = false;
 							vm.incarca = false
 						}).catch(function (error) {
-							vm.trebuieInregistrat = false;
 							vm.succes = null
 							eroare = error.response.data.message
 							vm.private_key = null;
